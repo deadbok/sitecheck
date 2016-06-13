@@ -25,13 +25,15 @@ class HostList(object):
         self.hosts = list()
         if not os.path.isfile(self.filename):
             self.saveJSON()
+        else:
+            self.loadJSON()
 
     def loadJSON(self):
         """
         Load host data from a JSON formatted text file.
         """
         with io.open(self.filename, 'r', encoding='utf-8') as json_file:
-            self.host = json.decoder(unicode(json_file.read()))
+            self.host = json.loads(unicode(json_file.read()))
         json_file.close()
 
     def saveJSON(self):

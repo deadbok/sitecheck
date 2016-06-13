@@ -33,6 +33,8 @@ def index():
     """
     Main status page.
     """
+    # Don't like doing this every time.
+    HOSTLIST.loadJSON()
     return render_template('main.html', NAME=NAME, version=__version__,
                            hosts=HOSTLIST.hosts)
 
@@ -46,7 +48,7 @@ def upload_file():
         import_file = request.files['file']
         HOSTLIST.addHosts(import_file.readlines())
         HOSTLIST.saveJSON()
-
+        # TODO show only newly added hosts
         return render_template('import.html', NAME=NAME, version=__version__,
                                hosts=HOSTLIST.getHostList())
 

@@ -166,8 +166,8 @@ function addLogLine(text)
 function ping()
 {
 	console.log('Requesting ping');
-	getHosts()
-	socket.emit('ping');
+	var hosts = $("#host:checked").map(function () {return this.value;}).get().join("");
+	socket.emit('ping', hosts);
 }
 
 function add()
