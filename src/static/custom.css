@@ -1,0 +1,94 @@
+/* Header stuff */
+.sc-header-list
+{
+	list-style: none;
+}
+
+.sc-title
+{
+	padding-top: 1em;
+	width: 7em;
+	color: white;
+	font-size: x-large;
+}
+
+.sc-version
+{
+	width: 5em;
+	color: rgb(200,200,200);
+	font-size: small;
+	display: inline;
+}
+
+.sc-username
+{
+	color: white;
+	display: inline;
+	padding-right: 1em;
+	float: right;
+}
+
+.sc-header 
+{
+	margin: 0;
+	/*box-shadow: 0px 2px 5px rgb(200,200,200);*/
+}
+
+/* Main content */
+.sc-content
+{
+	padding-top: 2em;
+}
+
+/*Host table entries */
+
+.sc-hostname
+{
+	color: rgb(100,100,100);
+}
+
+.sc-online
+{
+    color: green;
+}
+
+.sc-offline
+{
+    color: red;
+}
+
+.sc-unknown
+{
+    color: rgb(200,200,200);
+}
+
+/* Host table */
+table, th, td
+{
+    /* border-collapse: collapse; */
+    border-style: solid;
+    border-color: rgb(238, 238, 238);
+    border-width: 0px 0px 1px 0px;
+}
+
+th, td
+{
+    padding: 0.5em;
+}
+
+/* footer */
+footer
+{
+	witdh: 100%;
+	text-align: center;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+/* log */
+.sc-log
+{
+    height: 5em;
+    line-height: 1em;
+    overflow: hidden;
+}

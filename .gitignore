@@ -1,0 +1,9 @@
+*.log
+*.json
+server-list
+*.pyc
+venv
+.project
+.pydevproject
+.settings
+

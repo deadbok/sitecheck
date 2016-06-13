@@ -1,0 +1,38 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='custom.css') }}">
+{% endblock %}
+
+{% block title %}Site status - imported hosts{% endblock %}
+
+{% block navbar %}
+<div class="page-header sc-header bg-primary">
+	<ul class="sc-header-list">
+		<li class="text-uppercase sc-title">Site status</li>
+		<li class="sc-version">V{{ version }}</li>
+		<li class="text-right sc-username">{{ name }}</li>
+	</ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid sc-content">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Imported hosts</h3>
+		</div>
+		<div class="panel-body" id="log">
+			{% for host in hosts %}
+				{{ host.decode('utf-8') }}<br />
+			{% endfor %}
+		</div>
+	</div>
+<a href="{{ url_for('index') }}" class="btn btn-default">OK</a>
+<br />
+</div>
+<footer class="bg-primary">
+	<small><span class="copyright">&copy; Copyright 2016 Martin Bo Kristensen Gr&oslash;nholdt.</span><a href="LICENSE" class="license inverted">Read license.</a></small>
+</footer> 
+{% endblock %}
