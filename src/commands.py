@@ -8,7 +8,9 @@ Created on 06/06/2016
 from subprocess import Popen, PIPE
 import os.path
 import shlex
+import locale
 
+encoding = locale.getdefaultlocale()[1]
 
 def get_simple_cmd_output(cmd):
     """
@@ -24,7 +26,6 @@ def get_simple_cmd_output(cmd):
     ret = ret.returncode
 
     return(ret, ret_out)
-
 
 
 def diff_index_page(host):
