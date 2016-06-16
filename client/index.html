@@ -43,7 +43,7 @@
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
 						<h4 class="modal-title">Select host list file...</h4>
 					</div>
-					<form enctype="multipart/form-data" method="post" action="/import">
+					<form enctype="multipart/form-data" method="post" id="server_upload_form">
 						<div class="modal-body">
 							<input name="file" type="file" class="filestyle" />
 						</div>
@@ -56,6 +56,8 @@
 				</div>
 			</div>
 		</div>
+		
+		<div class="filebutton">Send Image<input type="file" id="imageFile" accept="image/*"></div>
 		<form>
 			<table id="host_table" style="width: 100%">
 				<tr>
@@ -69,7 +71,7 @@
 			</table>
 		</form>
 	</div>
-	<div class="loader-container"><div id="loader" class="loader"></div></div>
+	<div class="loader-container" id="loader-container"><div id="loader" class="loader"></div></div>
 	<footer class="bg-primary">
 		<small><span class="copyright">&copy; Copyright 2016
 				Martin Bo Kristensen Gr&oslash;nholdt.</span><a href="LICENSE"
@@ -114,7 +116,7 @@
 				json_data = JSON.parse(evt.data)
 				if (typeof(json_data.hosts) != 'undefined')
 				{
-					console.log(json_data.hosts + "Hosts");
+					console.log(json_data.hosts + " Hosts");
 					n_hosts = json_data.hosts;
 				}
 				else
@@ -124,9 +126,9 @@
 					$('#host_table').append(host_html);
 					rcv_hosts++;
 				}
-				if (rcv_hosts == n_host)
+				if (rcv_hosts == n_hosts)
 				{
-					$('#loader').prop('visible', false);
+					$('#loader-container').hide();
 				}
 			};
 
@@ -134,6 +136,26 @@
 				// websocket is closed.
 				console.log("Connection is closed...");
 			};
+			
+			$('#imageFile').on('change', function(e)
+			{
+				var file = e.originalEvent.target.files[0];
+				console.log("File name: " + file)
+			    var reader = new FileReader();
+		    	//When the file has been read...
+		    	reader.onload = function(evt)
+		    	{
+		        	//Because of how the file was read,
+		        	//evt.target.result contains the image in base64 format
+		        	//Nothing special, just creates an img element
+		        	//and appends it to the DOM so my UI shows
+		        	//that I posted an image.
+		        	//send the image via Socket.io
+		        	console.log('File loaded');
+		    	};
+		    	//And now, read the image and base64
+		    	reader.readAsDataURL(file);
+			});
 		} else {
 			// The browser doesn't support WebSocket
 			console.log("WebSocket NOT supported by your Browser!");
