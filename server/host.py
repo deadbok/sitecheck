@@ -8,6 +8,7 @@ Created on 11/06/2016
 import re
 import json
 import datetime
+from twisted.python import log
 from commands import get_simple_cmd_output
 
 IP_REGEXP = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
@@ -65,11 +66,12 @@ class Host(object):
         """
         Ping the host and extract status from the command.
         """
-        print("Pinging " + self.name.encode('utf8').strip())
         # ping command
-        cmd = "ping -c 1 " + self.name.encode('utf8').strip()
+        cmd = "ping -c 1 " + self.name.strip()
         # Run
         res = get_simple_cmd_output(cmd)
+
+        log.msg('Ping output: ' + res[1])
 
         if res[0] == 0:
             self.alive = True

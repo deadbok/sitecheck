@@ -56,6 +56,10 @@
 				</div>
 			</div>
 		</div>
+		<br />
+		<div class="loader-container">
+			<div id="loader" class="loader"></div>
+		</div>
 		<form>
 			<table id="host_table" style="width: 100%">
 				<tr>
@@ -69,7 +73,6 @@
 			</table>
 		</form>
 	</div>
-	<div class="loader-container"><div id="loader" class="loader"></div></div>
 	<footer class="bg-primary">
 		<small><span class="copyright">&copy; Copyright 2016
 				Martin Bo Kristensen Gr&oslash;nholdt.</span><a href="LICENSE"
@@ -79,10 +82,10 @@
 	<script src="js/jsrender.js"></script>
 	<script src="js/bootstrap.js"></script>
 	<script src="js/bootstrap-filestyle.js"></script>
-	
+
 	<script id="hostTmpl" type="text/x-jsrender">
-	<tr> 
-		<td><input type="checkbox" id="host" name="{{:name}}" value=""></td>
+	<tr id="{{:name}}_row"> 
+		<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
 		<td><a id="{{:name}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
 		<td id="{{:name}}_ip">{{:ip}}</td>
 		<td id="{{:name}}_state">{{:state}}</td>
@@ -93,7 +96,7 @@
 	<script type="text/javascript">
 		var host_tmpl = $.templates("#hostTmpl");
 		var n_hosts = 0;
-		
+
 		/* WebSocket communication with the server. */
 		if ("WebSocket" in window) {
 			console.log("WebSocket is supported by your Browser!");
@@ -109,24 +112,20 @@
 			};
 
 			ws.onmessage = function(evt) {
-				console.log("Data received: " + evt.data);
+				//console.log("Data received: " + evt.data);
 				//Convert to native
 				json_data = JSON.parse(evt.data)
-				if (typeof(json_data.hosts) != 'undefined')
+				n_hosts = json_data.length;
+				for (var i = 0; i < n_hosts; i++)
 				{
-					console.log(json_data.hosts + "Hosts");
-					n_hosts = json_data.hosts;
-				}
-				else
-				{
-					console.log("Host: " + json_data.name);
-					var host_html = host_tmpl.render(json_data);
+					var host = json_data.hosts[i];
+					console.log("Host: " + host.name);
+					var host_html = host_tmpl.render(host);
 					$('#host_table').append(host_html);
-					rcv_hosts++;
-				}
-				if (rcv_hosts == n_host)
-				{
-					$('#loader').prop('visible', false);
+					$('#progress').html((i + 1).toString() + '/' + n_hosts)
+					if ((i + 1) == n_hosts) {
+						$('#loader').hide();
+					}
 				}
 			};
 
@@ -158,42 +157,7 @@
 						return this.value;
 					}).get();
 					console.log('Hosts: ' + host_names);
-					$.post('/action', {
-						action : 'ping',
-						hosts : JSON.stringify(host_names)
-					}).done(function() {
-						console.log("Ping request send.")
-					}).fail(function() {
-						console.log("Ping request failed.")
-					});
-
-					n = host_names.length;
-					var update_timer = setInterval(function() {
-						$.post('/updates', {
-							action : 'get'
-						}).done(
-								function(data) {
-									console.log('Update')
-									var host = JSON.parse(data)
-									if (data != '[]') {
-										console.log(host);
-										$('input[name = "' + host.name + '"]')
-												.prop("checked", false);
-										$(
-												'#'
-														+ host.name.replace(
-																'.', '_')
-														+ '_time').html(
-												host.time);
-									}
-									n--;
-									if (n < 1) {
-										clearInterval(update_timer);
-									}
-								}).fail(function() {
-							console.log("Get updates request failed.")
-						});
-					}, 500);
+					ws.send('{ "action" : "ping", "hosts" : ' + JSON.stringify(host_names) + ' }');
 				});
 	</script>
 </body>

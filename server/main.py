@@ -18,9 +18,24 @@ class SiteCheckProtocol(WebSocketServerProtocol):
             msg = json.loads(payload.decode('utf8'))
             log.msg('Action: ' + msg['action'])
             if msg['action'] == 'get':
-                self.sendMessage(json.dumps({ "hosts": str(len(HOSTS.hosts))}).encode('utf-8'), False)
+                hosts = dict()
+                hosts['length'] = len(HOSTS.hosts)
+                hosts['hosts'] = list()
                 for host in HOSTS.hosts.values():
-                    self.sendMessage(json.dumps(host.getDict()).encode('utf-8'), False)
+                    hosts['hosts'].append(host.getDict())
+                self.sendMessage(json.dumps(hosts).encode('utf-8'), False)
+            if msg['action'] == 'ping':
+                for host in msg['hosts']:
+                    log.msg('Host: ' + host)
+                    HOSTS.hosts[host].ping()
+                    hosts = dict()
+                    hosts['length'] = 1
+                    hosts['hosts'] = list()
+                    hosts['hosts'].append(HOSTS.hosts[host].getDict())
+                    self.sendMessage(json.dumps(hosts).encode('utf-8'), False)
+                HOSTS.saveJSON()
+
+
         else:
             log.msg('Binary message received and discarded.')
 

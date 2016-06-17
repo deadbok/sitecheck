@@ -76,6 +76,11 @@ th, td
     padding: 0.5em;
 }
 
+tr:hover
+{
+ 	background-color: lightgray;
+}
+
 /* footer */
 footer
 {
@@ -111,6 +116,12 @@ footer
     animation: spin 2s linear infinite;
     margin: 0 auto;
 }
+
+#progress
+{
+    margin: 0 auto; 
+}
+
 
 @keyframes spin
 {
