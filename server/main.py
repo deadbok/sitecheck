@@ -12,30 +12,44 @@ HOSTS = Hosts('test')
 
 
 class SiteCheckProtocol(WebSocketServerProtocol):
+    def sendHosts(self, hosts):
+        """
+        Send the complete data set a list of hosts.
+        """
+        response = dict()
+        response['length'] = len(hosts)
+        response['hosts'] = list()
+        for host in hosts.values():
+            response['hosts'].append(host.getDict())
+        self.sendMessage(json.dumps(response).encode('utf-8'), False)
+
+    def sendHostsByName(self, hosts):
+        """
+        Send the complete data set a list of host names.
+        """
+        response = dict()
+        response['length'] = len(hosts)
+        response['hosts'] = list()
+        for host in hosts:
+            response['hosts'].append(HOSTS.hosts[host].getDict())
+        self.sendMessage(json.dumps(response).encode('utf-8'), False)
+
     def onMessage(self, payload, isBinary):
         if not isBinary:
             log.msg(payload.decode('utf8'))
             msg = json.loads(payload.decode('utf8'))
             log.msg('Action: ' + msg['action'])
             if msg['action'] == 'get':
-                hosts = dict()
-                hosts['length'] = len(HOSTS.hosts)
-                hosts['hosts'] = list()
-                for host in HOSTS.hosts.values():
-                    hosts['hosts'].append(host.getDict())
-                self.sendMessage(json.dumps(hosts).encode('utf-8'), False)
+                if msg['hosts'][0] == '*':
+                    self.sendHosts(HOSTS.hosts)
+                else:
+                    self.sendHostsByName(msg['hosts'])
             if msg['action'] == 'ping':
                 for host in msg['hosts']:
                     log.msg('Host: ' + host)
                     HOSTS.hosts[host].ping()
-                    hosts = dict()
-                    hosts['length'] = 1
-                    hosts['hosts'] = list()
-                    hosts['hosts'].append(HOSTS.hosts[host].getDict())
-                    self.sendMessage(json.dumps(hosts).encode('utf-8'), False)
+                    self.sendHostsByName([host])
                 HOSTS.saveJSON()
-
-
         else:
             log.msg('Binary message received and discarded.')
 

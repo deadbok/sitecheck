@@ -18,12 +18,13 @@
 <title>Site check</title>
 </head>
 <body>
-	<div class="page-header sc-header bg-primary">
-		<ul class="sc-header-list">
-			<li class="text-uppercase sc-title">Site status</li>
-			<li class="sc-version">V{{ version }}</li>
-			<li class="text-right sc-username">{{ name }}</li>
-		</ul>
+	<div class="container-fluid sc-header bg-primary">
+		<div class="row">
+			<div class="text-uppercase sc-title col-md-6">Site status</div>
+			<div class="text-right col-md-6"><span id="con_state" class="sc-connected sc-offline glyphicon glyphicon-transfer" aria-hidden="true"></span></div>
+			<div class="sc-version col-md-6">V{{ version }}</div>
+			<div class="text-right sc-username col-md-6">{{ name }}</div>
+		</div>
 	</div>
 	<div class="container-fluid sc-content">
 		<button type="button" class="btn btn-default">Add</button>
@@ -58,19 +59,23 @@
 		</div>
 		<div class="filebutton">Send Image<input type="file" id="imageFile" accept="image/*"></div>
 		<br />
-		<div class="loader-container">
+		<div class="loader-container" id="loader-container">
 			<div id="loader" class="loader"></div>
 		</div>
 		<form>
-			<table id="host_table" style="width: 100%">
-				<tr>
-					<th><input type="checkbox" id="allhost"></th>
-					<th>Host</th>
-					<th>IP</th>
-					<th>State</th>
-					<th>Reply from</th>
-					<th>Time</th>
-				</tr>
+			<table style="width: 100%">
+				<thead>
+					<tr>
+						<th><input type="checkbox" id="allhost"></th>
+						<th>Host</th>
+						<th>IP</th>
+						<th>State</th>
+						<th>Reply from</th>
+						<th>Time</th>
+					</tr>
+				</thead>
+				<tbody id="host_table">
+				</tbody>
 			</table>
 		</form>
 	</div>
@@ -83,54 +88,81 @@
 	<script src="js/jsrender.js"></script>
 	<script src="js/bootstrap.js"></script>
 	<script src="js/bootstrap-filestyle.js"></script>
-
-	<script id="hostTmpl" type="text/x-jsrender">
-	<tr id="{{:name}}_row"> 
-		<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
-		<td><a id="{{:name}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
-		<td id="{{:name}}_ip">{{:ip}}</td>
-		<td id="{{:name}}_state">{{:state}}</td>
-		<td id="{{:name}}_replyHost">{{:replyHost}}</td>
-		<td id="{{:name}}_time">{{:time}}</td>
-	</tr>
+	<!-- jsRender template or a host entry. -->
+	<script id="hostRowTmpl" type="text/x-jsrender">
+		<tr id="{{:id}}_row">
+			<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
+			<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
+			<td id="{{:id}}_ip">{{:ip}}</td>
+			<td id="{{:id}}_state">{{:state}}</td
+			<td id="{{:id}}_replyHost">{{:replyHost}}</td>
+			<td id="{{:id}}_time">{{:time}}</td>
+		</tr>
 	</script>
+	<script id="hostEntryTmpl" type="text/x-jsrender">
+		<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
+		<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
+		<td id="{{:id}}_ip">{{:ip}}</td>
+		<td id="{{:id}}_state">{{:state}}</td
+		<td id="{{:id}}_replyHost">{{:replyHost}}</td>
+		<td id="{{:id}}_time">{{:time}}</td>
+	</script>
+	
 	<script type="text/javascript">
-		var host_tmpl = $.templates("#hostTmpl");
-		var n_hosts = 0;
-
+		var host_row_tmpl = $.templates("#hostRowTmpl");
+		var host_entry_tmpl = $.templates("#hostEntryTmpl");
+		
 		/* WebSocket communication with the server. */
-		if ("WebSocket" in window) {
+		if ("WebSocket" in window)
+		{
 			console.log("WebSocket is supported by your Browser!");
 
-			// Let us open a web socket
+			// Open a socket.
 			var ws = new WebSocket("ws://localhost:5683");
-			var rcv_hosts = 0;
 
-			ws.onopen = function() {
-				// Web Socket is connected, send data using send()
+			ws.onopen = function()
+			{
+				// Web Socket is connected, get all hosts.
+				$('#con_state').css('color', 'green');
 				ws.send('{ "action" : "get", "hosts" : [ "*" ]}');
 				console.log("Message is sent...");
 			};
 
-			ws.onmessage = function(evt) {
-				//console.log("Data received: " + evt.data);
-				//Convert to native
-				json_data = JSON.parse(evt.data)
-				n_hosts = json_data.length;
+			ws.onmessage = function(evt)
+			{
+				var json_data = JSON.parse(evt.data)
+				var n_hosts = json_data.length;
+				//Run through the host names.
 				for (var i = 0; i < n_hosts; i++)
 				{
 					var host = json_data.hosts[i];
+					host.id = host.name.replace('.', '_');
 					console.log("Host: " + host.name);
-					var host_html = host_tmpl.render(host);
-					$('#host_table').append(host_html);
-					if ((i + 1) == n_hosts) {
-						$('#loader').hide();
+					//Check if the host is in the list.
+					host_row = $('#' + host.id + '_row')
+					if (host_row.length == 0)
+					{
+						var host_html = host_row_tmpl.render(host);
+						$('#host_table').append(host_html);
+						if ((i + 1) == n_hosts)
+						{
+							$('#loader').hide();
+							$('#loader-container').hide();
+						}
+					}
+					else
+					{
+						host_row.html('');
+						var host_html = host_entry_tmpl.render(host);
+						host_row.append(host_html);
 					}
 				}
 			};
 
-			ws.onclose = function() {
+			ws.onclose = function()
+			{
 				// websocket is closed.
+				$('#con_state').css('color', 'red');
 				console.log("Connection is closed...");
 			};
 			
@@ -150,26 +182,30 @@
 		        	//send the image via Socket.io
 		        	console.log('File loaded');
 		    	};
-		    	//And now, read the image and base64
+		    	//And now, read the image and base64.
 		    	reader.readAsDataURL(file);
 			});
-		} else {
-			// The browser doesn't support WebSocket
+		}
+		else
+		{
+			//The browser doesn't support WebSocket.
 			console.log("WebSocket NOT supported by your Browser!");
 		}
 
-		var n = 0;
-
-		/* Select all checkbox functianality */
+		//Select all checkboxes functionality.
 		$('#allhost').change(function() {
 			var checkboxes = $(this).closest('form').find(':checkbox');
-			if ($(this).is(':checked')) {
+			if ($(this).is(':checked'))
+			{
 				checkboxes.prop('checked', true);
-			} else {
+			}
+			else
+			{
 				checkboxes.prop('checked', false);
 			}
 		});
 
+		//Request a ping of some servers.
 		$('#ping').click(
 				function() {
 					console.log('Requesting ping');
