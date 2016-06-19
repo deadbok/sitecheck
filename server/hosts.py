@@ -47,8 +47,8 @@ class Hosts(object):
         """
         with io.open(self.filename, 'w', encoding='utf-8') as json_file:
             json_file.write(json.dumps([host.getDict() for host in self.hosts.values()],
-                                               ensure_ascii=False,
-                                               skipkeys=True))
+                                       ensure_ascii=False,
+                                       skipkeys=True))
 
         json_file.close()
 

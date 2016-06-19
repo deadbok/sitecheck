@@ -1,3 +1,29 @@
+/* It is not that ugly after all is it? */
+/*.pantone448c
+{
+	background-color: rgb(74,65,42);
+}
+
+a:link, a:visited
+{
+	color: #3b3b3b;
+}*/
+
+.blueback
+{
+	background-color: #337ab7;
+}
+
+.copyright
+{
+	color: lightgray;
+}
+
+.license
+{
+	color: white;
+}
+
 /* Header stuff */
 .sc-header-list
 {
@@ -53,7 +79,7 @@
 
 .sc-online
 {
-    color: green;
+    color: #00ff00;
 }
 
 .sc-offline
@@ -67,28 +93,16 @@
 }
 
 /* Host table */
-table, th, td
+/* Change the mouse cursor to pointer over sortable table headers. */
+th[data-sort]
 {
-    /* border-collapse: collapse; */
-    border-style: solid;
-    border-color: rgb(238, 238, 238);
-    border-width: 0px 0px 1px 0px;
-}
-
-th, td
-{
-    padding: 0.5em;
-}
-
-tr:hover
-{
- 	background-color: lightgray;
+	cursor: pointer;
 }
 
 /* footer */
 footer
 {
-	witdh: 100%;
+	width: 100%;
 	text-align: center;
 	padding-top: 0.5em;
 	padding-bottom: 0.5em;
@@ -112,8 +126,8 @@ footer
 
 .loader
 {
-    border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 16px solid #3498db; /* Blue */
+    border: 16px solid lightgray;
+    border-top: 16px solid #337ab7;
     border-radius: 50%;
     width: 240px;
     height: 240px;
@@ -131,4 +145,10 @@ footer
 {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Tool classes */
+.hidden
+{
+	display: none;
 }

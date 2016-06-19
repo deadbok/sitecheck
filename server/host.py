@@ -7,7 +7,7 @@ Created on 11/06/2016
 '''
 import re
 import json
-import datetime
+from datetime import datetime
 from twisted.python import log
 from commands import get_simple_cmd_output
 
@@ -33,16 +33,17 @@ class Host(object):
         elif ((host == '') and (host_dict is not None)):
             self.fromDict(host_dict)
 
+    def timeStamp(self, dt, epoch=datetime(1970, 1, 1)):
+        td = dt - epoch
+        return (td.microseconds + (td.seconds + td.days * 86400) * 10 ** 6) / 10 ** 6
+
     def getDict(self):
         host = dict()
         host['name'] = self.name
         host['alive'] = self.alive
         host['ip'] = self.ip
         host['replyHost'] = self.replyHost
-        if self.time == 'Never':
-            host['time'] = 'Never'
-        else:
-            host['time'] = str(self.time.replace(microsecond=0))
+        host['time'] = self.time
         return(host)
 
     def fromDict(self, host_dict):
@@ -53,11 +54,7 @@ class Host(object):
         self.alive = host_dict['alive']
         self.ip = host_dict['ip']
         self.replyHost = host_dict['replyHost']
-        if host_dict['time'] == 'Never':
-            self.time = 'Never'
-        else:
-            self.time = datetime.datetime.strptime(host_dict['time'],
-                                                   '%Y-%m-%d %H:%M:%S')
+        self.time = host_dict['time']
 
     def getJSON(self):
         return(json.encoder(self))
@@ -92,5 +89,5 @@ class Host(object):
         else:
             self.ip = "Unknown"
 
-        self.time = datetime.datetime.now()
+        self.time = self.timeStamp(datetime.utcnow())
 
