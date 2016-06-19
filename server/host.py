@@ -26,10 +26,10 @@ class Host(object):
         """
         if ((host != '') and (host_dict is None)):
             self.name = host
-            self.alive = None
+            self.state = 'None'
             self.ip = None
             self.replyHost = None
-            self.time = 'Never'
+            self.time = 0
         elif ((host == '') and (host_dict is not None)):
             self.fromDict(host_dict)
 
@@ -40,7 +40,7 @@ class Host(object):
     def getDict(self):
         host = dict()
         host['name'] = self.name
-        host['alive'] = self.alive
+        host['state'] = self.state
         host['ip'] = self.ip
         host['replyHost'] = self.replyHost
         host['time'] = self.time
@@ -51,7 +51,7 @@ class Host(object):
         Set values from a dictionary.
         """
         self.name = host_dict['name']
-        self.alive = host_dict['alive']
+        self.state = host_dict['state']
         self.ip = host_dict['ip']
         self.replyHost = host_dict['replyHost']
         self.time = host_dict['time']
@@ -71,9 +71,9 @@ class Host(object):
         log.msg('Ping output: ' + res[1])
 
         if res[0] == 0:
-            self.alive = True
+            self.state = 'Ping response'
         else:
-            self.alive = False
+            self.state = 'No answer'
 
         host_re = re.compile(HOST_REGEXP)
         re_host = host_re.search(res[1])

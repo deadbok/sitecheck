@@ -4,7 +4,6 @@ from twisted.python import log
 from twisted.internet import reactor
 from autobahn.twisted.websocket import WebSocketServerFactory
 from autobahn.twisted.websocket import WebSocketServerProtocol
-
 from hosts import Hosts
 
 __version__ = '0.0.3'
@@ -22,6 +21,7 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         for host in hosts.values():
             response['hosts'].append(host.getDict())
         self.sendMessage(json.dumps(response).encode('utf-8'), False)
+        log.msg('Send: ' + str(hosts))
 
     def sendHostsByName(self, hosts):
         """
@@ -33,6 +33,7 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         for host in hosts:
             response['hosts'].append(HOSTS.hosts[host].getDict())
         self.sendMessage(json.dumps(response).encode('utf-8'), False)
+        log.msg('Send: ' + str(hosts))
 
     def onMessage(self, payload, isBinary):
         if not isBinary:
@@ -49,6 +50,13 @@ class SiteCheckProtocol(WebSocketServerProtocol):
                     log.msg('Host: ' + host)
                     HOSTS.hosts[host].ping()
                     self.sendHostsByName([host])
+                HOSTS.saveJSON()
+            if msg['action'] == 'add':
+                log.msg('Adding: ' + str(msg['hosts']))
+                for host in msg['hosts']:
+                    if host != '':
+                        HOSTS.addHost(host)
+                        self.sendHostsByName([host])
                 HOSTS.saveJSON()
         else:
             log.msg('Binary message received and discarded.')

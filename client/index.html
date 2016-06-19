@@ -46,21 +46,16 @@
 					</div>
 					<form enctype="multipart/form-data" method="post" id="server_upload_form">
 						<div class="modal-body">
-							<input name="file" type="file" class="filestyle" />
+							<input name="file" type="file" id="importFile" class="filestyle" />
 						</div>
 						<div class="modal-footer">
-							<input type="submit" class="btn btn-default" value="OK">
+							<button type="button" class="btn btn-default" id="importOK" data-dismiss="modal">OK</button>
 							<button type="button" class="btn btn-default"
 								data-dismiss="modal">Cancel</button>
 						</div>
 					</form>
 				</div>
 			</div>
-		</div>
-		<div class="filebutton">Send Image<input type="file" id="imageFile" accept="image/*"></div>
-		<br />
-		<div class="loader-container" id="loader-container">
-			<div id="loader" class="loader"></div>
 		</div>
 		<form>
 			<div class="table-responsive">
@@ -149,8 +144,9 @@
 			//Generate CSS safe id.
 			host.id = host.name.replace('.', '_');
 			//Generate IP sort key.
-			if (host.ip == 'Unknown')
+			if ((host.ip == 'Unknown') || (host.ip == undefined))
 			{
+				host.ip = 'Unknown'
 				host.ip_value = 0;
 			}
 			else
@@ -159,6 +155,10 @@
 				host.ip_value = ip_split[0]*0x1000000 + ip_split[1]*0x10000 + ip_split[2]*0x100 + ip_split[3]*1;
 			}
 			//Generate time sort key.
+			if ((host.time = undefined) || (host.time = 'Never'))
+			{
+				host.time = 0;	
+			}
 			host.time_value = host.time
 			dt = new Date(host.time * 1000) 
 			host.time = new Date(host.time * 1000).format('H:i:s j/n-Y');
@@ -187,6 +187,7 @@
 			$('#' + host.id + '_time').updateSortVal(host.time_value);
 			//Uncheck the all checkbox
 			$('#allhost').prop('checked', false);
+			console.log('Updated ' + JSON.stringify(host));
 		}
 		
 		/* WebSocket communication with the server. */
@@ -205,9 +206,9 @@
 				console.log("Message is sent...");
 			};
 
-			ws.onmessage = function(evt)
+			ws.onmessage = function(e)
 			{
-				var json_data = JSON.parse(evt.data)
+				var json_data = JSON.parse(e.data)
 				//Run through the host names.
 				for (var i = 0; i < json_data.length; i++)
 				{
@@ -229,13 +230,13 @@
 				console.log("Connection is closed...");
 			};
 			
-			$('#imageFile').on('change', function(e)
+			$('#importOK').on('click', function(e)
 			{
-				var file = e.originalEvent.target.files[0];
+				var file = $('#importFile')[0].files[0];
 				console.log("File name: " + file)
 			    var reader = new FileReader();
-		    	//When the file has been read...
-		    	reader.onload = function(evt)
+				
+		    	reader.onload = function(e)
 		    	{
 		        	//Because of how the file was read,
 		        	//evt.target.result contains the image in base64 format
@@ -244,9 +245,19 @@
 		        	//that I posted an image.
 		        	//send the image via Socket.io
 		        	console.log('File loaded');
+		        	var hosts = e.target.result.split('\n');
+		        	for ( var i = 0; i < hosts.length; i++)
+		        	{
+		        		//Strip of comments
+		        		if (hosts[i][0] == '#')
+		        		{
+		        			hosts.splice(i, 1);
+		        		}
+		        	}
+		        	ws.send('{ "action" : "add", "hosts" : ' + JSON.stringify(hosts) + ' }');
 		    	};
 		    	//And now, read the image and base64.
-		    	reader.readAsDataURL(file);
+		    	reader.readAsText(file);
 			});
 		}
 		else

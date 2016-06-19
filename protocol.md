@@ -20,8 +20,13 @@ host to perform the action on. Only the `*` wildcard is supported
 	
 ###Actions###
 
+ * add
  * get
  * ping
+ 
+####add####
+
+Add the hosts listed in `hosts`.
  
 ####get####
 
