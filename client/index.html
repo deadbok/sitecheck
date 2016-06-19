@@ -21,8 +21,8 @@
 	<div class="container-fluid sc-header blueback">
 		<div class="row">
 			<div class="text-uppercase sc-title col-md-6">Site status</div>
-			<div class="text-right col-md-6"><span id="con_state" class="sc-connected sc-offline glyphicon glyphicon-transfer" aria-hidden="true"></span></div>
-			<div class="sc-version col-md-6">V0.1.15</div>
+			<div class="text-right col-md-6"><span id="con_state" class="sc-connected sc-offline glyphicon glyphicon-link" aria-hidden="true"></span></div>
+			<div class="sc-version col-md-6">V0.3.0</div>
 			<div class="text-right sc-username col-md-6">{{ name }}</div>
 		</div>
 	</div>
@@ -155,7 +155,7 @@
 				host.ip_value = ip_split[0]*0x1000000 + ip_split[1]*0x10000 + ip_split[2]*0x100 + ip_split[3]*1;
 			}
 			//Generate time sort key.
-			if ((host.time = undefined) || (host.time = 'Never'))
+			if ((host.time == undefined) || (host.time == 'Never'))
 			{
 				host.time = 0;	
 			}

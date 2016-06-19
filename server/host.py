@@ -6,7 +6,6 @@ Created on 11/06/2016
 :license: GPLv3, see LICENSE for more details.
 '''
 import re
-import json
 from datetime import datetime
 from twisted.python import log
 from commands import get_simple_cmd_output
@@ -24,40 +23,37 @@ class Host(object):
         """
         Constructor.
         """
-        if ((host != '') and (host_dict is None)):
+        if (host != '') and (host_dict is None):
             self.name = host
             self.state = 'None'
-            self.ip = None
+            self.ipaddr = None
             self.replyHost = None
             self.time = 0
-        elif ((host == '') and (host_dict is not None)):
-            self.fromDict(host_dict)
+        elif (host == '') and (host_dict is not None):
+            self.from_dict(host_dict)
 
-    def timeStamp(self, dt, epoch=datetime(1970, 1, 1)):
-        td = dt - epoch
-        return (td.microseconds + (td.seconds + td.days * 86400) * 10 ** 6) / 10 ** 6
+    def time_stamp(self, in_datetime, epoch=datetime(1970, 1, 1)):
+        unix_time = in_datetime - epoch
+        return (unix_time.microseconds + (unix_time.seconds + unix_time.days * 86400) * 10 ** 6) / 10 ** 6
 
-    def getDict(self):
+    def get_dict(self):
         host = dict()
         host['name'] = self.name
         host['state'] = self.state
-        host['ip'] = self.ip
+        host['ip'] = self.ipaddr
         host['replyHost'] = self.replyHost
         host['time'] = self.time
-        return(host)
+        return host
 
-    def fromDict(self, host_dict):
+    def from_dict(self, host_dict):
         """
         Set values from a dictionary.
         """
         self.name = host_dict['name']
         self.state = host_dict['state']
-        self.ip = host_dict['ip']
+        self.ipaddr = host_dict['ip']
         self.replyHost = host_dict['replyHost']
         self.time = host_dict['time']
-
-    def getJSON(self):
-        return(json.encoder(self))
 
     def ping(self):
         """
@@ -83,11 +79,10 @@ class Host(object):
             self.replyHost = "Unknown"
 
         ip_re = re.compile(IP_REGEXP)
-        ip = ip_re.search(res[1])
-        if ip is not None:
-            self.ip = ip.group()
+        ip_addr = ip_re.search(res[1])
+        if ip_addr is not None:
+            self.ipaddr = ip_addr.group()
         else:
-            self.ip = "Unknown"
+            self.ipaddr = "Unknown"
 
-        self.time = self.timeStamp(datetime.utcnow())
-
+        self.time = self.time_stamp(datetime.utcnow())

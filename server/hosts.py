@@ -46,7 +46,7 @@ class Hosts(object):
         Save host data to a JSON formatted text file.
         """
         with io.open(self.filename, 'w', encoding='utf-8') as json_file:
-            json_file.write(json.dumps([host.getDict() for host in self.hosts.values()],
+            json_file.write(json.dumps([host.get_dict() for host in self.hosts.values()],
                                        ensure_ascii=False,
                                        skipkeys=True))
 
@@ -72,12 +72,9 @@ class Hosts(object):
         for host_dict in dicts:
             self.addHost(host_dict=host_dict)
 
-    def getHostList(self):
-        names = list()
-        for host in self.hosts.values():
-            names.append(host.name)
-
-        return(names)
-
-    def getJSON(self):
-        return json.encoder(self.hosts)
+    def ping(self, host):
+        """
+        Ping a named host.
+        """
+        if host in self.hosts.keys():
+            self.hosts[host].ping()
