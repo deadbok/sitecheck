@@ -22,7 +22,7 @@
 		<div class="row">
 			<div class="text-uppercase sc-title col-md-6">Site status</div>
 			<div class="text-right col-md-6"><span id="con_state" class="sc-connected sc-offline glyphicon glyphicon-link" aria-hidden="true"></span></div>
-			<div class="sc-version col-md-6">V0.3.0</div>
+			<div class="sc-version col-md-6">V0.3.1</div>
 			<div class="text-right sc-username col-md-6">{{ name }}</div>
 		</div>
 	</div>
@@ -58,17 +58,22 @@
 				</div>
 			</div>
 		</div>
+		<br />
+		<div class="loader-container" id="loader-container">
+			<div id="loader" class="loader"></div>
+		</div>
 		<form>
 			<div class="table-responsive">
 				<table style="width: 100%" class="table table-hover">
 					<thead>
 						<tr>
 							<th><input type="checkbox" id="allhost"></th>
-							<th id="host_header" data-sort="string" class="sort_pointer">Host </th>
-							<th id="ip_header" data-sort="int" class="sort_pointer">IP </th>
-							<th id="state_header" data-sort="string" class="sort_pointer">State </th>
-							<th id="replyHost_header" data-sort="string" class="sort_pointer">Reply from </th>
-							<th id="time_header" data-sort="int" class="sort_pointer">Time </th>
+							<th id="host_header" data-sort="string">Host </th>
+							<th id="ip_header" data-sort="int">IP </th>
+							<th id="state_header" data-sort="string">State </th>
+							<th id="replyHost_header" data-sort="string">Reply from </th>
+							<th id="time_header" data-sort="int">Time </th>
+							<th id="expand_header"><span class="glyphicon glyphicon-collapse-down"></span></th>
 						</tr>
 					</thead>
 					<tbody id="host_table">
@@ -92,13 +97,14 @@
 	
 	<!-- jsRender template or a host entry. -->
 	<script id="hostRowTmpl" type="text/x-jsrender">
-		<tr id="{{:id}}_row">
+		<tr id="{{:id}}_row" name="{{:name}}">
 			<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
 			<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
 			<td id="{{:id}}_ip" data-sort-value="{{:ip_value}}">{{:ip}}</td>
 			<td id="{{:id}}_state">{{:state}}</td>
 			<td id="{{:id}}_replyHost">{{:replyHost}}</td>
 			<td id="{{:id}}_time" data-sort-value="{{:time_value}}">{{:time}}</td>
+			<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
 		</tr>
 	</script>
 	<script id="hostEntryTmpl" type="text/x-jsrender">
@@ -108,12 +114,23 @@
 		<td id="{{:id}}_state">{{:state}}</td>
 		<td id="{{:id}}_replyHost">{{:replyHost}}</td>
 		<td id="{{:id}}_time" data-sort-value="{{:time_value}}">{{:time}}</td>
+		<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
 	</script>
-	
+	<script id="hostDetailTmpl" type="text/x-jsrender">
+		<tr id="{{:id}}_detail" class="collapse">
+			<td colspan="0">
+				<div class="well">
+					<code id="{{:id}}_diff">{{:diff}}</code>
+				</div>
+			</td>
+		</tr>
+	</script>	
 	<script type="text/javascript">
 		var host_row_tmpl = $.templates("#hostRowTmpl");
 		var host_entry_tmpl = $.templates("#hostEntryTmpl");
+		var host_detail_tmpl = $.templates("#hostDetailTmpl");
 		var sort_header = $('#host_header');
+		var hosts = {};
 		
 		//Hide the tample until some data is in it.
 		$('#host_table').hide();
@@ -137,6 +154,29 @@
       		}
       		sort_header = th.eq(data.column);
       		sort_header.append('<span id="arrow" class="' + arrow + '"></span>');
+      		
+			$('tr[id$="_row"]').each(function()
+					{
+						var host = $(this).attr('name');
+						console.log('rendering details for host: ' + host);
+						//Render details.
+						var host_detail_html = host_detail_tmpl.render(hosts[host]);
+						$(this).after(host_detail_html);
+					});
+			
+			//Make sure the spinner is hidden and the host table is visible.
+			$('#loader').hide();
+			$('#loader-container').hide();
+			$('#host_table').show();
+			//Bind the colapse funtion to each button.
+			$('span[id$="_expand"]').each(function()
+					{
+						$(this).click(function()
+								{
+									$(this).toggleClass('glyphicon-collapse-up glyphicon-collapse-down');
+									$('#' + $(this).attr('id').replace('_expand', '_detail')).toggle();
+								});
+					});
 		});
       	
 		//Insert a host entry, sorting them on the go.
@@ -180,6 +220,8 @@
 				var host_html = host_entry_tmpl.render(host);
 				host_row.append(host_html);
 			}
+			//Add to the internal representation.
+			hosts[host.name] = host;
 			//Update table sort data
 			$('#' + host.id + '_link').updateSortVal(host.name);
 			$('#' + host.id + '_ip').updateSortVal(host.ip_value);
@@ -209,6 +251,8 @@
 
 			ws.onmessage = function(e)
 			{
+				//Clear all details, they'll be regenerated after the sort.
+				$('tr[id$="_detail"]').remove();
 				var json_data = JSON.parse(e.data)
 				//Run through the host names.
 				for (var i = 0; i < json_data.length; i++)
@@ -217,11 +261,6 @@
 				}
 				//Re-sort
 				sort_header.stupidsort();
-
-				//Make sure the spinner is hidden and the host table is visible.
-				$('#loader').hide();
-				$('#loader-container').hide();
-				$('#host_table').show();
 			};
 
 			ws.onclose = function()
@@ -239,12 +278,6 @@
 				
 		    	reader.onload = function(e)
 		    	{
-		        	//Because of how the file was read,
-		        	//evt.target.result contains the image in base64 format
-		        	//Nothing special, just creates an img element
-		        	//and appends it to the DOM so my UI shows
-		        	//that I posted an image.
-		        	//send the image via Socket.io
 		        	console.log('File loaded');
 		        	var hosts = e.target.result.split('\n');
 		        	for ( var i = 0; i < hosts.length; i++)
@@ -257,7 +290,6 @@
 		        	}
 		        	ws.send('{ "action" : "add", "hosts" : ' + JSON.stringify(hosts) + ' }');
 		    	};
-		    	//And now, read the image and base64.
 		    	reader.readAsText(file);
 			});
 		}

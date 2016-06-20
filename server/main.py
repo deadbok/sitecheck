@@ -14,7 +14,7 @@ from twisted.python import log
 from hosts import Hosts
 
 
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 HOSTS = Hosts('test')
 QUEUE = Queue()
 
