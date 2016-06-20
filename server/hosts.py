@@ -78,3 +78,10 @@ class Hosts(object):
         """
         if host in self.hosts.keys():
             self.hosts[host].ping()
+
+    def diff(self, host):
+        """
+        Diff a named host.
+        """
+        if host in self.hosts.keys():
+            self.hosts[host].diff_index_page()

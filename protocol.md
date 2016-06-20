@@ -21,6 +21,7 @@ host to perform the action on. Only the `*` wildcard is supported
 ###Actions###
 
  * add
+ * diff
  * get
  * ping
  
@@ -28,6 +29,11 @@ host to perform the action on. Only the `*` wildcard is supported
 
 Add the hosts listed in `hosts`.
  
+####diff####
+
+Run a diff on the current and the last index page of the hosts listed in
+`hosts`.
+
 ####get####
 
 Get the data for the hosts listed in `hosts`.

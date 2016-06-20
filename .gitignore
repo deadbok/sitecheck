@@ -6,4 +6,4 @@ venv
 .project
 .pydevproject
 .settings
-
+server/sites

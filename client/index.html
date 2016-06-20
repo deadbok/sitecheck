@@ -30,6 +30,7 @@
 		<button type="button" class="btn btn-default">Add</button>
 		<button type="button" class="btn btn-default">Delete</button>
 		<button type="button" class="btn btn-default" id="ping">Ping</button>
+		<button type="button" class="btn btn-default" id="diff">Diff</button>
 
 		<!-- Trigger the modal with a button -->
 		<button type="button" class="btn btn-default" data-toggle="modal"
@@ -275,6 +276,16 @@
 					}).get();
 					console.log('Hosts: ' + host_names);
 					ws.send('{ "action" : "ping", "hosts" : ' + JSON.stringify(host_names) + ' }');
+				});
+		//Request a diff of some servers.
+		$('#diff').click(
+				function() {
+					console.log('Requesting diff');
+					var host_names = $("#host:checked").map(function() {
+						return this.value;
+					}).get();
+					console.log('Hosts: ' + host_names);
+					ws.send('{ "action" : "diff", "hosts" : ' + JSON.stringify(host_names) + ' }');
 				});
 	</script>
 </body>

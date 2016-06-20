@@ -1,10 +1,11 @@
 """
 Main Site Check Websocket server routines.
 """
-from queue import Queue
-import json
+import os
 import sys
+import json
 import threading
+from queue import Queue
 from autobahn.twisted.websocket import WebSocketServerFactory
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from twisted.internet import reactor
@@ -53,6 +54,10 @@ class SiteCheckProtocol(WebSocketServerProtocol):
                     self.send_hosts(HOSTS.hosts)
                 else:
                     self.send_hosts_by_name(msg['hosts'])
+            if msg['action'] == 'diff':
+                for host in msg['hosts']:
+                    log.msg('Host: ' + host)
+                    QUEUE.put((host, HOSTS.diff, self.send_hosts_by_name))
             if msg['action'] == 'ping':
                 for host in msg['hosts']:
                     log.msg('Host: ' + host)
@@ -88,6 +93,10 @@ if __name__ == '__main__':
 
     factory = WebSocketServerFactory(u"ws://127.0.0.1:5683")
     factory.protocol = SiteCheckProtocol
+
+    # Create directory for diffs if needed.
+    if not os.path.isdir('sites'):
+        os.mkdir('sites')
 
     # Create the queue and thread pool.
     for i in range(10):
