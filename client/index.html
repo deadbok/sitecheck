@@ -73,7 +73,7 @@
 							<th id="state_header" data-sort="string">State </th>
 							<th id="replyHost_header" data-sort="string">Reply from </th>
 							<th id="time_header" data-sort="int">Time </th>
-							<th id="expand_header"><span class="glyphicon glyphicon-collapse-down"></span></th>
+							<th id="expand_header"><span id="expand_all" class="glyphicon glyphicon-collapse-down"></span></th>
 						</tr>
 					</thead>
 					<tbody id="host_table">
@@ -120,7 +120,7 @@
 		<tr id="{{:id}}_detail" class="collapse">
 			<td colspan="0">
 				<div class="well">
-					<code id="{{:id}}_diff">{{:diff}}</code>
+					<pre id="{{:id}}_diff">{{:diff_escape}}</pre>
 				</div>
 			</td>
 		</tr>
@@ -136,6 +136,37 @@
 		$('#host_table').hide();
 		//Sort the table.
 		var table = $('table').stupidtable();
+		
+		function addHost(host)
+		{
+			//Generate CSS safe id.
+			host.id = host.name.replace('.', '_');
+			//Generate IP sort key.
+			if ((host.ip == 'Unknown') || (host.ip == undefined))
+			{
+				host.ip = 'Unknown'
+				host.ip_value = 0;
+			}
+			else
+			{
+				var ip_split = host.ip.split('.');
+				host.ip_value = ip_split[0]*0x1000000 + ip_split[1]*0x10000 + ip_split[2]*0x100 + ip_split[3]*1;
+			}
+			//Generate time sort key.
+			if ((host.time == undefined) || (host.time == 'Never'))
+			{
+				host.time = 0;	
+			}
+			host.time_value = host.time
+			dt = new Date(host.time * 1000) 
+			host.time = new Date(host.time * 1000).format('H:i:s j/n-Y');
+			//Escape the diff
+			host.diff_escape = escapeHtml(host.diff);
+			
+			console.log("Adding host: " + host.name);
+			//Add to the internal representation.
+			hosts[host.name] = host;
+		}
 		
 		//Set the sort indicator.
       	table.on("aftertablesort", function (event, data)
@@ -178,32 +209,28 @@
 								});
 					});
 		});
+		
+		//Stolen from: http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
+		var entityMap = {
+				"&": "&amp;",
+	   		    "<": "&lt;",
+	   		    ">": "&gt;",
+	   		    '"': '&quot;',
+	   		    "'": '&#39;',
+	   		    "/": '&#x2F;'
+	   		    };
+	
+		function escapeHtml(string)
+		{
+			return String(string).replace(/[&<>"'\/]/g, function (s)
+					{
+						return entityMap[s];
+					});
+		}
       	
 		//Insert a host entry, sorting them on the go.
 		function render(host)
 		{
-			//Generate CSS safe id.
-			host.id = host.name.replace('.', '_');
-			//Generate IP sort key.
-			if ((host.ip == 'Unknown') || (host.ip == undefined))
-			{
-				host.ip = 'Unknown'
-				host.ip_value = 0;
-			}
-			else
-			{
-				var ip_split = host.ip.split('.');
-				host.ip_value = ip_split[0]*0x1000000 + ip_split[1]*0x10000 + ip_split[2]*0x100 + ip_split[3]*1;
-			}
-			//Generate time sort key.
-			if ((host.time == undefined) || (host.time == 'Never'))
-			{
-				host.time = 0;	
-			}
-			host.time_value = host.time
-			dt = new Date(host.time * 1000) 
-			host.time = new Date(host.time * 1000).format('H:i:s j/n-Y');
-			
 			console.log("Host: " + host.name);
 			//Check if the host is in the list.
 			host_row = $('#' + host.id + '_row')
@@ -252,11 +279,12 @@
 			ws.onmessage = function(e)
 			{
 				//Clear all details, they'll be regenerated after the sort.
-				$('tr[id$="_detail"]').remove();
+				//$('tr[id$="_detail"]').remove();
 				var json_data = JSON.parse(e.data)
 				//Run through the host names.
 				for (var i = 0; i < json_data.length; i++)
 				{
+					addHost(json_data.hosts[i])
 					render(json_data.hosts[i]);
 				}
 				//Re-sort
@@ -318,6 +346,23 @@
 					}).get();
 					console.log('Hosts: ' + host_names);
 					ws.send('{ "action" : "diff", "hosts" : ' + JSON.stringify(host_names) + ' }');
+				});
+		//Expand all details.
+		$('#expand_all').click(
+				function() {
+					$(this).toggleClass('glyphicon-collapse-up glyphicon-collapse-down');
+					if ($(this).hasClass('glyphicon-collapse-up'))
+					{
+						$('span[id$="_expand"]').removeClass('glyphicon-collapse-up glyphicon-collapse-down');
+						$('span[id$="_expand"]').addClass('glyphicon-collapse-up');
+						$('.collapse').collapse('show');
+					}
+					else
+					{
+						$('span[id$="_expand"]').removeClass('glyphicon-collapse-up glyphicon-collapse-down');
+						$('span[id$="_expand"]').addClass('glyphicon-collapse-down');
+						$('.collapse').collapse('hide');
+					}
 				});
 	</script>
 </body>
