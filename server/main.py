@@ -25,12 +25,20 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         Send the complete data set a list of hosts.
         """
         response = dict()
-        response['length'] = len(hosts)
         response['hosts'] = list()
         for host in hosts.values():
             response['hosts'].append(host.get_dict())
-        self.sendMessage(json.dumps(response).encode('utf-8'), False)
-        log.msg('Send: ' + str(hosts))
+            # Split in packages of 10
+            if (len(response['hosts']) == 10):
+                response['length'] = len(response['hosts'])
+                self.sendMessage(json.dumps(response).encode('utf-8'), False)
+                log.msg('Sent: ' + str(response['hosts']))
+                response['hosts'] = list()
+        # Send the rest
+        if ((len(response['hosts']) < 10) and (len(response['hosts']) > 0)):
+            response['length'] = len(response['hosts'])
+            self.sendMessage(json.dumps(response).encode('utf-8'), False)
+            log.msg('Sent: ' + str(response['hosts']))
 
     def send_hosts_by_name(self, hosts):
         """
@@ -41,8 +49,17 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         response['hosts'] = list()
         for host in hosts:
             response['hosts'].append(HOSTS.hosts[host].get_dict())
-        self.sendMessage(json.dumps(response).encode('utf-8'), False)
-        log.msg('Send: ' + str(hosts))
+            # Split in packages of 10
+            if (len(response) == 10):
+                response['length'] = len(response['hosts'])
+                self.sendMessage(json.dumps(response).encode('utf-8'), False)
+                log.msg('Sent: ' + str(response['hosts']))
+                response['hosts'] = list()
+        # Send the rest
+        if ((len(response) < 10) and (len(response) > 0)):
+            response['length'] = len(response['hosts'])
+            self.sendMessage(json.dumps(response).encode('utf-8'), False)
+            log.msg('Sent: ' + str(response['hosts']))
 
     def onMessage(self, payload, isBinary):
         if not isBinary:
