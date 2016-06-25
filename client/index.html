@@ -22,7 +22,7 @@
 		<div class="row">
 			<div class="text-uppercase sc-title col-md-6">Site status</div>
 			<div class="text-right col-md-6"><span id="con_state" class="sc-connected sc-offline glyphicon glyphicon-link" aria-hidden="true"></span></div>
-			<div class="sc-version col-md-6">V0.3.1</div>
+			<div class="sc-version col-md-6">V0.3.2</div>
 			<div class="text-right sc-username col-md-6">{{ name }}</div>
 		</div>
 	</div>
@@ -92,7 +92,6 @@
 	<script src="js/bootstrap.js"></script>
 	<script src="js/bootstrap-filestyle.js"></script>
 	<script src="js/selectall.js"></script>
-	<script src="js/stupidtable.js"></script>
 	<script src="js/date.format.js"></script>
 	
 	<!-- jsRender template or a host entry. -->
@@ -134,8 +133,6 @@
 		
 		//Hide the tample until some data is in it.
 		$('#host_table').hide();
-		//Sort the table.
-		var table = $('table').stupidtable();
 		
 		function addHost(host)
 		{
@@ -157,6 +154,7 @@
 			{
 				host.time = 0;	
 			}
+			//UNIX time to human readable
 			host.time_value = host.time
 			dt = new Date(host.time * 1000) 
 			host.time = new Date(host.time * 1000).format('H:i:s j/n-Y');
@@ -169,7 +167,7 @@
 		}
 		
 		//Set the sort indicator.
-      	table.on("aftertablesort", function (event, data)
+/*      	table.on("aftertablesort", function (event, data)
       	{
       		var th = $(this).find("th");
       		th.find("#arrow").remove();
@@ -208,7 +206,7 @@
 									$('#' + $(this).attr('id').replace('_expand', '_detail')).toggle();
 								});
 					});
-		});
+		});*/
 		
 		//Stolen from: http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery
 		var entityMap = {
@@ -249,12 +247,6 @@
 			}
 			//Add to the internal representation.
 			hosts[host.name] = host;
-			//Update table sort data
-			$('#' + host.id + '_link').updateSortVal(host.name);
-			$('#' + host.id + '_ip').updateSortVal(host.ip_value);
-			$('#' + host.id + '_replyHost').updateSortVal(host.replyHost);
-			$('#' + host.id + '_state').updateSortVal(host.state);
-			$('#' + host.id + '_time').updateSortVal(host.time_value);
 			//Uncheck the all checkbox
 			$('#allhost').prop('checked', false);
 			console.log('Updated ' + JSON.stringify(host));
@@ -287,8 +279,6 @@
 					addHost(json_data.hosts[i])
 					render(json_data.hosts[i]);
 				}
-				//Re-sort
-				sort_header.stupidsort();
 			};
 
 			ws.onclose = function()
