@@ -42,6 +42,7 @@
 	      		</ul>
 	      		<ul class="nav navbar-nav navbar-right">
 	        		<li>
+	        		 	<span id="n_hosts" class="badge">0</span>
 	        			<span id="con_state" class="sc-connected sc-offline fa fa-unlink" aria-hidden="true">
 	        			</span>
 	        		</li>
@@ -118,7 +119,7 @@
 		</div>
 		<form>
 			<div class="table-responsive">
-				<table style="width: 100%" class="table table-hover">
+				<table id="host_table" style="width: 100%" class="table table-hover">
 					<thead>
 						<tr>
 							<th><input type="checkbox" id="allhost"></th>
@@ -130,8 +131,6 @@
 							<th id="expand_header" class="pointer"><span id="expand_all" class="glyphicon glyphicon-collapse-down"></span></th>
 						</tr>
 					</thead>
-					<tbody id="host_table">
-					</tbody>
 				</table>
 			</div>
 		</form>
@@ -150,48 +149,29 @@
 	
 	<!-- jsRender template or a host entry. -->
 	<script id="hostRowTmpl" type="text/x-jsrender">
-		<tr id="{{:id}}_row" name="{{:name}}">
-			<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
-			<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
-			<td id="{{:id}}_ip" data-sort-value="{{:ip_value}}">{{:ip}}</td>
-			<td id="{{:id}}_state">{{:state}}</td>
-			<td id="{{:id}}_replyHost">{{:replyHost}}</td>
-			<td id="{{:id}}_time" data-sort-value="{{:time_value}}">{{:time}}</td>
-			<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
-		</tr>
-		<tr id="{{:id}}_detail" class="collapse">
-			<td colspan="0">
-				<pre id="{{:id}}_diff">{{:diff_escape}}</pre>
-			</td>
-		</tr>
-	</script>
-	<script id="hostEntryTmpl" type="text/x-jsrender">
-		<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
-		<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
-		<td id="{{:id}}_ip" data-sort-value="{{:ip_value}}">{{:ip}}</td>
-		<td id="{{:id}}_state">{{:state}}</td>
-		<td id="{{:id}}_replyHost">{{:replyHost}}</td>
-		<td id="{{:id}}_time" data-sort-value="{{:time_value}}">{{:time}}</td>
-		<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
-	</script>
-	<script id="hostDetailTmpl" type="text/x-jsrender">
-		<tr id="{{:id}}_detail" class="collapse">
-			<td colspan="0">
-				<div class="well">
+		<tbody id="{{:id}}_body">
+			<tr id="{{:id}}_row" name="{{:name}}">
+				<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
+				<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
+				<td id="{{:id}}_ip" data-sort-value="{{:ip_value}}">{{:ip}}</td>
+				<td id="{{:id}}_state">{{:state}}</td>
+				<td id="{{:id}}_replyHost">{{:replyHost}}</td>
+				<td id="{{:id}}_time" data-sort-value="{{:time_value}}">{{:time}}</td>
+				<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
+			</tr>
+			<tr id="{{:id}}_detail" class="collapse">
+				<td colspan="0">
 					<pre id="{{:id}}_diff">{{:diff_escape}}</pre>
-				</div>
-			</td>
-		</tr>
-	</script>	
+				</td>
+			</tr>
+		</tbody>
+	</script>
 	<script type="text/javascript">
 		var host_row_tmpl = $.templates("#hostRowTmpl");
 		var host_entry_tmpl = $.templates("#hostEntryTmpl");
 		var host_detail_tmpl = $.templates("#hostDetailTmpl");
 		var sort_header = $('#host_header');
 		var hosts = {};
-		
-		//Hide the tample until some data is in it.
-		$('#host_table').hide();
 		
 		//Bind the colapse all funtion.
 		$('#expand_all').click(function()
@@ -243,10 +223,14 @@
 			host.time = new Date(host.time * 1000).format('H:i:s j/n-Y');
 			//Escape the diff
 			host.diff_escape = escapeHtml(host.diff);
+			//Not rendered yet.
+			host.visible = false;
 			
 			console.log("Adding host: " + host.name);
 			//Add to the internal representation.
 			hosts[host.name] = host;
+			
+			$('#n_hosts').html(Object.keys(hosts).length);
 		}
 		
 		//Set the sort indicator.
@@ -313,9 +297,7 @@
 		function render(host)
 		{
 			console.log("Host: " + host.name);
-			//Check if the host is in the list.
-			host_row = $('#' + host.id + '_row')
-			if (host_row.length == 0)
+			if (!host.visible)
 			{
 				//New host, append.
 				var host_html = host_row_tmpl.render(host);
@@ -323,13 +305,14 @@
 			}
 			else
 			{
+				
+				var host_body = $('#' + host.id + '_body');
 				//Update host.
-				host_row.html('');
 				var host_html = host_entry_tmpl.render(host);
-				host_row.append(host_html);
+				host_body.replaceWith(host_html);
 			}
-			//Add to the internal representation.
-			hosts[host.name] = host;
+			//Host is visible
+			host.visible = true;
 			//Bind the colapse funtion.
 			$('#' + host.id + '_expand').click(function()
 					{
@@ -373,7 +356,6 @@
 					//Make sure the spinner is hidden and the host table is visible.
 					$('#loader').hide();
 					$('#loader-container').hide();
-					$('#host_table').show();
 				}
 			};
 
