@@ -41,23 +41,21 @@ pre {
 
 .sc-title
 {
-	padding-top: 1em;
-	color: white;
-	font-size: x-large;
+	color: lightgray;
+	font-size: large;
 }
 
 .sc-connected
 {
-	padding-right: 1em;
-	padding-top: 2em;
-	padding-bottom: 1.2em;
+	padding-top: 1em;
+	padding-bottom: 1em;
+	font-size: large;
 }
 
 .sc-version
 {
 	color: rgb(200,200,200);
-	font-size: small;
-	padding-bottom: 1.2em;
+	font-size: x-small;
 }
 
 .sc-username
@@ -88,7 +86,7 @@ pre {
 
 .sc-online
 {
-    color: #00ff00;
+    color: #00aa00;
 }
 
 .sc-offline
