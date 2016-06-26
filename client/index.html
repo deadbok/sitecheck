@@ -341,11 +341,11 @@
 				var host_body = $('#' + host.id + '_body');
 				var host_html = host_row_tmpl.render(host);
 				host_body.replaceWith(host_html);
-				host.updated = false;
 			}
 			//Host is visible
 			host.visible = true;
 			host.rendered = true;
+			host.updated = false;
 			//Bind the colapse funtion.
 			$('#' + host.id + '_expand').click(function()
 					{
