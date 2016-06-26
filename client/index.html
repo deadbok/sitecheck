@@ -130,11 +130,21 @@
 					<thead>
 						<tr>
 							<th><input type="checkbox" id="allhost"></th>
-							<th id="host_header" data-sort="string">Host</th>
-							<th id="ip_header" data-sort="int">IP</th>
-							<th id="state_header" data-sort="string">State</th>
-							<th id="replyHost_header" data-sort="string">Reply from</th>
-							<th id="time_header" data-sort="int">Time</th>
+							<th id="host_header" class="pointer">
+								Host&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							</th>
+							<th id="ip_header" class="pointer">
+								IP&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							</th>
+							<th id="state_header" class="pointer">
+								State&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							</th>
+							<th id="replyHost_header" class="pointer">
+								Reply from&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							</th>
+							<th id="time_header" class="pointer">
+								Time&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							</th>
 							<th id="expand_header" class="pointer"><span id="expand_all"
 								class="glyphicon glyphicon-collapse-down"></span></th>
 						</tr>
@@ -236,7 +246,7 @@
       			var arrow = "glyphicon glyphicon-chevron-down";
       		}
       		sort_header = th.eq(data.column);
-      		sort_header.append('<span id="arrow" class="' + arrow + '"></span>');
+      		sort_header.append('<span id="arrow" class="glyphicon glyphicon-chevron-down"></span>');
       		
 			$('tr[id$="_row"]').each(function()
 					{

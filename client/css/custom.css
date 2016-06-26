@@ -95,18 +95,6 @@ pre {
     color: red;
 }
 
-.sc-unknown
-{
-    color: rgb(200,200,200);
-}
-
-/* Host table */
-/* Change the mouse cursor to pointer over sortable table headers. */
-th[data-sort]
-{
-	cursor: pointer;
-}
-
 /* footer */
 footer
 {
@@ -114,14 +102,6 @@ footer
 	text-align: center;
 	padding-top: 2em;
 	padding-bottom: 0.5em;
-}
-
-/* log */
-.sc-log
-{
-    height: 5em;
-    line-height: 1em;
-    overflow: hidden;
 }
 
 /* spinner */
@@ -135,19 +115,13 @@ footer
 .loader
 {
     border: 16px solid lightgray;
-    border-top: 16px solid #337ab7;
+    border-top: 16px solid darkgrey;
     border-radius: 50%;
     width: 240px;
     height: 240px;
     animation: spin 2s linear infinite;
     margin: 0 auto;
 }
-
-#progress
-{
-    margin: 0 auto; 
-}
-
 
 @keyframes spin
 {
@@ -164,4 +138,14 @@ footer
 .pointer
 {
 	cursor: pointer;
+}
+
+.sort-inactive
+{
+	color: lightgray;
+}
+
+.sort-active
+{
+	color: darkgray;
 }
