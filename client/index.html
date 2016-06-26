@@ -32,7 +32,7 @@
 				</button>
 				<a class="navbar-brand" href="index.html"> <span
 					class="text-uppercase sc-title">Site status</span> <span
-					class="sc-version">V0.4.2</span>
+					class="sc-version">V0.4.3</span>
 				</a>
 			</div>
 
@@ -157,7 +157,7 @@
 	<script src="js/date.format.js"></script>
 
 	<!-- jsRender template of a host entry. -->
-	<script id="hostRowTmpl" type="text/x-jsrender">
+	<script id="hostBodyTmpl" type="text/x-jsrender">
 		<tbody id="{{:id}}_body">
 			<tr id="{{:id}}_row" name="{{:name}}">
 				<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
@@ -176,7 +176,7 @@
 		</tbody>
 	</script>
 	<script type="text/javascript">
-		var host_row_tmpl = $.templates("#hostRowTmpl");
+		var host_row_tmpl = $.templates("#hostBodyTmpl");
 		var hosts = {};
 		var protocol = new Protocol();
 		
@@ -283,7 +283,7 @@
 		function addHost(host)
 		{
 			//Generate CSS safe id.
-			host.id = host.name.replace('.', '_');
+			host.id = host.name.replace('.', '_').replace('-', '_');
 			//Generate IP sort key.
 			if ((host.ip == 'Unknown') || (host.ip == undefined))
 			{
@@ -309,11 +309,15 @@
 			if (hosts[host.name] != undefined)
 			{
 				host.visible = hosts[host.name].visible;
+				host.rendered = hosts[host.name].rendered;
 			}
 			else
 			{
 				host.visible = false;
+				host.rendered = false;
 			}
+			host.updated = true;
+			
 			
 			console.log("Adding host: " + host.name);
 			//Add to the internal representation.
@@ -325,7 +329,7 @@
 		//Insert a host entry, sorting them on the go.
 		function render(host)
 		{
-			if (!host.visible)
+			if ( !host.rendered )
 			{
 				//New host, append.
 				var host_html = host_row_tmpl.render(host);
@@ -333,14 +337,15 @@
 			}
 			else
 			{
-				
-				var host_body = $('#' + host.id + '_body');
 				//Update host.
+				var host_body = $('#' + host.id + '_body');
 				var host_html = host_row_tmpl.render(host);
 				host_body.replaceWith(host_html);
+				host.updated = false;
 			}
 			//Host is visible
 			host.visible = true;
+			host.rendered = true;
 			//Bind the colapse funtion.
 			$('#' + host.id + '_expand').click(function()
 					{
