@@ -90,4 +90,22 @@ function select_sort()
 		}
 		$(this).children('#arrow').toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
 	}
+	//Trigger sort and render.
+	sorted_keys = [];
+	$('tbody[id$="_bodyl"]').remove();
+	for (var host in hosts)
+	{
+		if (hosts.hasOwnProperty(host))
+		{
+			hosts[host].rendered = false;
+		}
+	}
+	for (var host in hosts)
+	{
+		if (hosts.hasOwnProperty(host))
+		{
+			console.log('Render host: ' + host);
+			render(hosts[host]);
+		}
+	}
 }
