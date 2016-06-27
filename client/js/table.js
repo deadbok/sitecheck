@@ -92,7 +92,7 @@ function select_sort()
 	}
 	//Trigger sort and render.
 	sorted_keys = [];
-	$('tbody[id$="_bodyl"]').remove();
+	$('tbody[id$="_body"]').remove();
 	for (var host in hosts)
 	{
 		if (hosts.hasOwnProperty(host))
