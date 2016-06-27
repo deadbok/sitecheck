@@ -32,7 +32,7 @@
 				</button>
 				<a class="navbar-brand" href="index.html"> <span
 					class="text-uppercase sc-title">Site status</span> <span
-					class="sc-version">V0.4.3</span>
+					class="sc-version">V0.4.4</span>
 				</a>
 			</div>
 
@@ -130,20 +130,20 @@
 					<thead>
 						<tr>
 							<th><input type="checkbox" id="allhost"></th>
-							<th id="host_header" class="pointer">
-								Host&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							<th class="pointer">
+								<span id="name_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Host</span>
 							</th>
-							<th id="ip_header" class="pointer">
-								IP&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							<th class="pointer">
+								<span id="ip_value_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;IP</span>
 							</th>
-							<th id="state_header" class="pointer">
-								State&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							<th class="pointer">
+								<span id="state_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;State</span>
 							</th>
-							<th id="replyHost_header" class="pointer">
-								Reply from&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							<th class="pointer">
+								<span id="replyHost_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Reply from</span>
 							</th>
-							<th id="time_header" class="pointer">
-								Time&nbsp;&nbsp;<span id="arrow" class="text-muted sort-inactive glyphicon glyphicon-chevron-down"></span>
+							<th class="pointer">
+								<span id="time_value_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Time</span>
 							</th>
 							<th id="expand_header" class="pointer"><span id="expand_all"
 								class="glyphicon glyphicon-collapse-down"></span></th>
@@ -163,6 +163,7 @@
 	<script src="js/bootstrap.js"></script>
 	<script src="js/bootstrap-filestyle.js"></script>
 	<script src="js/protocol.js"></script>
+	<script src="js/table.js"></script>
 	<script src="js/actions.js"></script>
 	<script src="js/date.format.js"></script>
 
@@ -172,10 +173,10 @@
 			<tr id="{{:id}}_row" name="{{:name}}">
 				<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
 				<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
-				<td id="{{:id}}_ip" data-sort-value="{{:ip_value}}">{{:ip}}</td>
+				<td id="{{:id}}_ip">{{:ip}}</td>
 				<td id="{{:id}}_state">{{:state}}</td>
 				<td id="{{:id}}_replyHost">{{:replyHost}}</td>
-				<td id="{{:id}}_time" data-sort-value="{{:time_value}}">{{:time}}</td>
+				<td id="{{:id}}_time">{{:time}}</td>
 				<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
 			</tr>
 			<tr id="{{:id}}_detail" class="collapse">
@@ -188,6 +189,7 @@
 	<script type="text/javascript">
 		var host_row_tmpl = $.templates("#hostBodyTmpl");
 		var hosts = {};
+		var sort_value = undefined;
 		var protocol = new Protocol();
 		
 		//Change the UI status display when connected.
@@ -228,7 +230,8 @@
 		$('#diff').click(req_diff);
 		//Connect/disconnect from server.
 		$('#con_state').click(toggle_connection);
-
+		//Bind sort select to headers.
+		$('span[id$="_header"]').click(select_sort)
 		
 		//Set the sort indicator.
 /*      	table.on("aftertablesort", function (event, data)
