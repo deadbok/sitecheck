@@ -1,5 +1,5 @@
 """
-Main Site Check Websocket server routines.
+Main Site Check WebSockets server routines.
 """
 import os
 import sys

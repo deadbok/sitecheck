@@ -98,12 +98,6 @@ function select_sort()
 		if (hosts.hasOwnProperty(host))
 		{
 			hosts[host].rendered = false;
-		}
-	}
-	for (var host in hosts)
-	{
-		if (hosts.hasOwnProperty(host))
-		{
 			console.log('Render host: ' + host);
 			render(hosts[host]);
 		}

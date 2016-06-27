@@ -374,6 +374,8 @@
 						{
 							//First entry.
 							sorted_keys.push(host.name);
+							var host_html = host_row_tmpl.render(host);
+							$('#host_table').append(host_html);
 							console.log(host.name + ' ' + i);
 						}
 						else
@@ -389,12 +391,32 @@
 								{
 									sorted_keys.splice(i, 0, host.name);
 									console.log(host.name + ' added at ' + i);
+									var host_html = host_row_tmpl.render(host);
+									if (i == 0)
+									{
+										$('tbody[id$="' + hosts[sorted_keys[i]].id + '_body"]').insertBefore(host_html);
+									}
+									else
+									{
+										$('tbody[id$="' + hosts[sorted_keys[i - 1]].id + '_body"]').insertAfter(host_html);
+									}
+									console.log(host.name + ' ' + i);
 									sorted = true;	
 								}
 								else if (i == (sorted_keys.length - 1))
 								{
 									sorted_keys.splice(i, 0, host.name);
 									console.log(host.name + ' added at ' + i);
+									var host_html = host_row_tmpl.render(host);
+									if (i == 0)
+									{
+										$('tbody[id$="' + hosts[sorted_keys[i]].id + '_body"]').insertBefore(host_html);
+									}
+									else
+									{
+										$('tbody[id$="' + hosts[sorted_keys[i - 1]].id + '_body"]').insertAfter(host_html);
+									}
+									console.log(host.name + ' ' + i);
 									sorted = true;									
 								}
 								else
