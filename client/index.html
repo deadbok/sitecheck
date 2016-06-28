@@ -56,24 +56,40 @@
 		<div>
 			<div class="btn-group" role="group">
 				<!-- Actions -->
-				<button type="button" class="btn btn-default">Add</button>
-				<button type="button" class="btn btn-default">Delete</button>
+				<button type="button" class="btn btn-default glyphicon glyphicon-plus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Add a host."></button>
+				<button type="button" class="btn btn-default glyphicon glyphicon-minus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Remove a host."></button>
 			</div>
 			<div class="btn-group" role="group">
-				<button type="button" class="btn btn-default" id="ping">Ping</button>
-				<button type="button" class="btn btn-default" id="diff">Diff</button>
+				<button type="button" class="btn btn-default" id="ping" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Ping a host.">Ping</button>
+				<button type="button" class="btn btn-default" id="diff" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Diff a hosts index page from last copy.">Diff</button>
 			</div>
 			<div class="btn-group" role="group">
-				<!-- Trigger the import modal with a button -->
-				<button type="button" class="btn btn-default" data-toggle="modal"
-					data-target="#importModal">Import host...</button>
+				<div class="btn-group" role="group">
+					<button class="btn btn-default dropdown-toggle glyphicon glyphicon-import" type="button"
+						id="importDropdown" data-toggle="dropdown" aria-haspopup="true"
+						aria-expanded="true" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Import data."><span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="importDropdown">
+						<li>Server list</li>
+						<li>JSON</li>
+					</ul>
+				</div>
+				<div class="btn-group" role="group"">
+					<button class="btn btn-default dropdown-toggle glyphicon glyphicon-export" type="button"
+						id="exportDropdown" data-toggle="dropdown" aria-haspopup="true"
+						aria-expanded="true" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Export data."><span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="exportDropdown">
+						<li>CSV</li>
+						<li>JSON</li>
+					</ul>
+				</div>
 			</div>
 			<div class="btn-group" role="group">
 				<div class="dropdown">
-					<button class="btn btn-default dropdown-toggle" type="button"
+					<button class="btn btn-default dropdown-toggle glyphicon glyphicon-list" type="button"
 						id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-						aria-expanded="true">
-						Hosts per page <span class="caret"></span>
+						aria-expanded="true" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Hosts per page."><span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 						<li>10</li>
@@ -234,6 +250,11 @@
 		$('#con_state').click(toggle_connection);
 		//Bind sort select to headers.
 		$('span[id$="_header"]').click(select_sort)
+		//Initialise tooltips.
+		$(document).ready(function()
+		{
+    		$('[data-toggle="tooltip"]').tooltip();
+		});
 		
 		//Import hosts from a file
 		$('#importOK').click(

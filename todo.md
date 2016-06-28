@@ -1,4 +1,4 @@
-#TODO# 
+# TODO # 
  
 ## Client ##
 
@@ -9,10 +9,13 @@
  * Make host table responsive
  * Fix sort bug.
  * Sort table starting from the middle (optimisation)
+ * Import/export JSON
+ * Export CSV
+ * Add/remove host
 
  
 ## Server ##
 
  * Save previous JSON data, to detect IP changes and such.
  * Grep style detection of unwanted patterns in index.html
- 
+ * Add/remove host
