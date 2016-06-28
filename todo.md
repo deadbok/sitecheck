@@ -5,9 +5,10 @@
  * Grep style detection of unwanted patterns in index.html
  * Reconnect timer on client.
  * Pagination
- * Sort by redrawing the internal structure, sorted a list of names sorted according to the sort key. Use these as lookup in the structure.
  * Search
- * Host table is not responsive
+ * Make host table responsive
+ * Fix sort bug.
+ * Sort table starting from the middle (optimisation)
 
  
 ## Server ##
