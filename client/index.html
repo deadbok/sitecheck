@@ -31,8 +31,7 @@
 						class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="index.html"> <span
-					class="text-uppercase sc-title">Site status</span> <span
-					class="sc-version">V0.5.1</span>
+					class="text-uppercase sc-title">Site status</span>
 				</a>
 			</div>
 
@@ -41,6 +40,7 @@
 				id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li class="active"><a href="index.html">Home</a></li>
+					<li><a href="about.html">About</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li><span id="n_hosts" class="badge">0</span> <span
@@ -70,8 +70,12 @@
 						aria-expanded="true" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Import data."><span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" aria-labelledby="importDropdown">
-						<li>Server list</li>
-						<li>JSON</li>
+						<li>
+							<a href="#" data-toggle="modal" data-target="#importHostModal">Host list</a>
+						</li>
+						<li>
+							<a href="#" data-toggle="modal" data-target="#importCSVModal">JSON</a>
+						</li>
 					</ul>
 				</div>
 				<div class="btn-group" role="group"">
@@ -100,7 +104,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="btn-group" role="group">
+			<div class="btn-group navbar-right" role="group">
 				<!--  Search -->
 				<form class="form-inline" role="search">
 					<div class="form-group">
@@ -113,7 +117,7 @@
 		</div>
 
 		<!-- Modal -->
-		<div id="importModal" class="modal fade" role="dialog">
+		<div id="importHostModal" class="modal fade" role="dialog" tabindex="-1">
 			<div class="modal-dialog modal-sm">
 				<!-- Modal content-->
 				<div class="modal-content">
@@ -136,10 +140,13 @@
 				</div>
 			</div>
 		</div>
+		
 		<br />
+		
 		<div class="loader-container" id="loader-container">
 			<div id="loader" class="loader"></div>
 		</div>
+		
 		<form>
 			<div class="table-responsive">
 				<table id="host_table" style="width: 100%" class="table table-hover">
@@ -170,15 +177,18 @@
 		</form>
 	</div>
 	<footer class="navbar-inverse">
+		<span class="text-uppercase sc-title">Site status</span> <span
+					class="sc-version">V0.5.2</span>
+		<br />
 		<small><span class="copyright">&copy; Copyright 2016
 				Martin Bo Kristensen Gr&oslash;nholdt.</span> <a class="license"
 			href="LICENSE">Read license.</a></small>
 	</footer>
-	<script src="js/jquery.js"></script>
-	<script src="js/jsrender.js"></script>
-	<script src="js/bootstrap.js"></script>
-	<script src="js/bootstrap-filestyle.js"></script>
-	<script src="js/date.format.js"></script>
+	<script src="js/jquery-2.2.4.min.js"></script>
+	<script src="js/jsrender.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-filestyle.min.js"></script>
+	<script src="js/date.format.min.js"></script>
 	<script src="js/protocol.js"></script>
 	<script src="js/table.js"></script>
 	<script src="js/actions.js"></script>
@@ -281,3 +291,4 @@
 				});
 	</script>
 </body>
+</html>

@@ -1,4 +1,9 @@
-/* WebSocket communication with the server. */
+
+/*
+ * WebSocket communication with the server
+ * 
+ * Copyright (c) 2016 Martin Bo Kristensen Grønholdt
+ */
 
 function Protocol()
 {

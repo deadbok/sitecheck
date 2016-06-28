@@ -1,6 +1,6 @@
-# TODO # 
+# TODO
  
-## Client ##
+## Client
 
  * Grep style detection of unwanted patterns in index.html
  * Reconnect timer on client.
@@ -14,7 +14,7 @@
  * Add/remove host
 
  
-## Server ##
+## Server
 
  * Save previous JSON data, to detect IP changes and such.
  * Grep style detection of unwanted patterns in index.html

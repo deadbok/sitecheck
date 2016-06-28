@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<!-- Bootstrap -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+			  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+			<![endif]-->
+<link rel="stylesheet" href="css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="css/custom.css">
+<title>Site check</title>
+</head>
+<body>
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+					aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.html"> <span
+					class="text-uppercase sc-title">Site status</span>
+				</a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse"
+				id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li><a href="index.html">Home</a></li>
+					<li class="active"><a href="about.html">About</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><span id="n_hosts" class="badge">0</span> <span
+						id="con_state"
+						class="pointer sc-connected sc-offline fa fa-unlink"
+						aria-hidden="true"> </span></li>
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+		</div>
+		<!-- /.container-fluid -->
+	</nav>
+	<div class="container-fluid sc-content">
+		<h2>About site check</h2>
+		<p>Site check is a client/server application to keep track of a
+			collection of hosts.</p>
+		<h3>Other software</h3>
+		<p>Site check uses these fine libraries to make things tick.</p>
+		<ul>
+			<li>Autobahn: <a href="http://autobahn.ws/">http://autobahn.ws</a></li>
+			<li>Bootstrap: <a href="http://http://getbootstrap.com/">http://http://getbootstrap.com</a></li>
+			<li>Bootstrap-filestyle: <a
+				href="http://http://markusslima.github.io/bootstrap-filestyle//">http://http://markusslima.github.io/bootstrap-filestyle/</a></li>
+			<li>Date.format: <a
+				href="https://github.com/jacwright/date.format">https://github.com/jacwright/date.format</a></li>
+			<li>Font Awesome: <a href="http://fontawesome.io/">http://fontawesome.io/</a></li>
+			<li>JQuery: <a href="http://jquery.com/">http://jquery.com</a></li>
+			<li>JSRender: <a href="https://github.com/BorisMoore/jsrender">https://github.com/BorisMoore/jsrender</a></li>
+		</ul>
+	</div>
+
+	<footer class="navbar-inverse">
+		<span class="text-uppercase sc-title">Site status</span> <span
+			class="sc-version">V0.5.2</span> <br /> <small><span
+			class="copyright">&copy; Copyright 2016 Martin Bo Kristensen
+				Gr&oslash;nholdt.</span> <a class="license" href="LICENSE">Read
+				license.</a></small>
+	</footer>
+
+</body>
+</html>
