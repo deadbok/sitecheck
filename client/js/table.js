@@ -176,119 +176,124 @@ function addHost(host)
 //Insert a host entry in the table, sorting them on the go.
 function render(host)
 {
-	if (host.updated || (!host.rendered))
+	//Remove the previous entry if there is one.
+	if (host.rendered)
 	{
-		if (sort_value == undefined)
+		$('tbody[id$="' + host.id + '_body"]').remove();
+		host.rendered = false;
+		
+	}
+	
+	if (sort_value == undefined)
+	{
+		//No sort just append.
+		sort_keys.push(host.name);
+		var host_html = host_row_tmpl.render(host);
+		$('#host_table').append(host_html);
+	}
+	else
+	{
+		function sort_host(a, b)
 		{
-			//No sort just append.
+			switch(sort_value)
+			{
+				case 'name':
+					return a[sort_value].localeCompare(b[sort_value]);
+					break;
+				case 'ip_value':
+					if ( a[sort_value] < b[sort_value])
+					{
+						return -1;
+					}
+					else if (a[sort_value] == b[sort_value])
+					{
+						return 0;
+					}
+					else
+					{
+						return 1;
+					}
+					break;
+				case 'state':
+					return a[sort_value].localeCompare(b[sort_value]);
+					break;
+				case 'replyHost':
+					return a[sort_value].localeCompare(b[sort_value]);
+					break;
+				case 'time_value':
+					if ( a[sort_value] < b[sort_value])
+					{
+						return -1;
+					}
+					else if (a[sort_value] == b[sort_value])
+					{
+						return 0;
+					}
+					else
+					{
+						return 1;
+					}
+					break;
+				case undefined:
+					return -1;
+					break;
+				default: console.log('Unknown sort entry: ' + sort_value);
+			}
+		}
+
+		if ( sort_keys.length == 0 )
+		{
+			//First entry.
 			sort_keys.push(host.name);
 			var host_html = host_row_tmpl.render(host);
 			$('#host_table').append(host_html);
 		}
 		else
 		{
-			function sort_host(a, b)
+			
+			var sorted = false;
+			var i = 0;
+			var last_res = undefined;
+			while ( (!sorted) && (i < sort_keys.length ) )
 			{
-				switch(sort_value)
+				//Save the current sort value.
+				var res = sort_host(hosts[sort_keys[i]], host) * sort_order;
+
+				//If we're at the end, just append
+				if ( (sort_keys.length == ( i + 1)) && ( res < 1) )
 				{
-					case 'name':
-						return a[sort_value].localeCompare(b[sort_value]);
-						break;
-					case 'ip_value':
-						if ( a[sort_value] < b[sort_value])
-						{
-							return -1;
-						}
-						else if (a[sort_value] == b[sort_value])
-						{
-							return 0;
-						}
-						else
-						{
-							return 1;
-						}
-						break;
-					case 'state':
-						return a[sort_value].localeCompare(b[sort_value]);
-						break;
-					case 'replyHost':
-						return a[sort_value].localeCompare(b[sort_value]);
-						break;
-					case 'time_value':
-						if ( a[sort_value] < b[sort_value])
-						{
-							return -1;
-						}
-						else if (a[sort_value] == b[sort_value])
-						{
-							return 0;
-						}
-						else
-						{
-							return 1;
-						}
-						break;
-					case undefined:
-						return -1;
-						break;
-					default: console.log('Unknown sort entry: ' + sort_value);
+					sort_keys.push(host.name);
+					var host_html = host_row_tmpl.render(host);
+					$('#host_table').append(host_html);
+					sorted = true;
 				}
-			}
-
-			if ( sort_keys.length == 0 )
-			{
-				//First entry.
-				sort_keys.push(host.name);
-				var host_html = host_row_tmpl.render(host);
-				$('#host_table').append(host_html);
-			}
-			else
-			{
-				
-				var sorted = false;
-				var i = 0;
-				var last_res = undefined;
-				while ( (!sorted) && (i < sort_keys.length ) )
+				else
 				{
-					//Save the current sort value.
-					var res = sort_host(hosts[sort_keys[i]], host) * sort_order;
-
-					//If we're at the end, just append
-					if ( (sort_keys.length == ( i + 1)) && ( res < 1) )
+					if ( res > -1 )
 					{
-						sort_keys.push(host.name);
+						//Insert before
 						var host_html = host_row_tmpl.render(host);
-						$('#host_table').append(host_html);
-						sorted = true;
+						$('tbody[id$="' + hosts[sort_keys[i]].id + '_body"]').before(host_html);
+						sort_keys.splice(i, 0, host.name);
+						sorted = true;	
 					}
-					else
-					{
-						if ( res > -1 )
-						{
-							//Insert before
-							var host_html = host_row_tmpl.render(host);
-							$('tbody[id$="' + hosts[sort_keys[i]].id + '_body"]').before(host_html);
-							sort_keys.splice(i, 0, host.name);
-							sorted = true;	
-						}
-					}
-					i++;
 				}
+				i++;
 			}
 		}
-		//Host is visible.
-		host.visible = true;
-		//Host is in the table.
-		host.rendered = true;
-		//Host has no new data.
-		host.updated = false;
-		//Bind the colapse funtion.
-		$('#' + host.id + '_expand').click(function()
-		{
-			$(this).toggleClass('glyphicon-collapse-up glyphicon-collapse-down');
-			$('#' + $(this).attr('id').replace('_expand', '_detail')).collapse('toggle');
-		});
-		//Uncheck the all checkbox
-		$('#allhost').prop('checked', false);
 	}
+	//Host is visible.
+	host.visible = true;
+	//Host is in the table.
+	host.rendered = true;
+	//Host has no new data.
+	host.updated = false;
+	//Bind the colapse funtion.
+	$('#' + host.id + '_expand').click(function()
+	{
+		$(this).toggleClass('glyphicon-collapse-up glyphicon-collapse-down');
+		$('#' + $(this).attr('id').replace('_expand', '_detail')).collapse('toggle');
+	});
+	//Uncheck the all checkbox
+	$('#allhost').prop('checked', false);
 }
