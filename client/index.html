@@ -208,6 +208,11 @@
 			<tr id="{{:id}}_detail" class="collapse">
 				<td colspan="0">
 					<pre id="{{:id}}_diff">{{:diff_escape}}</pre>
+					<ul>
+						{{for msgs}}
+    						<li class="sc-{{:score}}">{{:msg}}</li>
+						{{/for}}
+					</ul>
 				</td>
 			</tr>
 		</tbody>

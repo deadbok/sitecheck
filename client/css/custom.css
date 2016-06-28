@@ -89,6 +89,23 @@ pre {
     color: red;
 }
 
+.sc-good
+{
+	color: rgb(0,150, 0);
+}
+
+.sc-neutral
+{
+	color: rgb(75,75, 75);
+}
+
+.sc-bad
+{
+	color: rgb(150,0, 0);
+}
+
+
+
 /* footer */
 footer
 {

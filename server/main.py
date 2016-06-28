@@ -1,6 +1,10 @@
 """
 Main Site Check WebSockets server routines.
+
+:copyright: (c) 2016 by Martin Grønholdt.
+:license: MIT, see LICENSE for more details.
 """
+
 import os
 import sys
 import json
@@ -14,7 +18,7 @@ from twisted.python import log
 from hosts import Hosts
 
 
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 HOSTS = Hosts('test')
 QUEUE = Queue()
 
@@ -32,13 +36,11 @@ class SiteCheckProtocol(WebSocketServerProtocol):
             if (len(response['hosts']) == 10):
                 response['length'] = len(response['hosts'])
                 self.sendMessage(json.dumps(response).encode('utf-8'), False)
-                log.msg('Sent: ' + str(response['hosts']))
                 response['hosts'] = list()
         # Send the rest
         if ((len(response['hosts']) < 10) and (len(response['hosts']) > 0)):
             response['length'] = len(response['hosts'])
             self.sendMessage(json.dumps(response).encode('utf-8'), False)
-            log.msg('Sent: ' + str(response['hosts']))
 
     def send_hosts_by_name(self, hosts):
         """
@@ -53,13 +55,11 @@ class SiteCheckProtocol(WebSocketServerProtocol):
             if (len(response) == 10):
                 response['length'] = len(response['hosts'])
                 self.sendMessage(json.dumps(response).encode('utf-8'), False)
-                log.msg('Sent: ' + str(response['hosts']))
                 response['hosts'] = list()
         # Send the rest
         if ((len(response) < 10) and (len(response) > 0)):
             response['length'] = len(response['hosts'])
             self.sendMessage(json.dumps(response).encode('utf-8'), False)
-            log.msg('Sent: ' + str(response['hosts']))
 
     def onMessage(self, payload, isBinary):
         if not isBinary:

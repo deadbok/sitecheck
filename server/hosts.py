@@ -3,7 +3,7 @@
 Created on 11/06/2016
 
 :copyright: (c) 2016 by Martin Grønholdt.
-:license: GPLv3, see LICENSE for more details.
+:license: MIT, see LICENSE for more details.
 '''
 import io
 import json
@@ -48,7 +48,9 @@ class Hosts(object):
         with io.open(self.filename, 'w', encoding='utf-8') as json_file:
             json_file.write(json.dumps([host.get_dict() for host in self.hosts.values()],
                                        ensure_ascii=False,
-                                       skipkeys=True))
+                                       skipkeys=True,
+                                       indent=4,
+                                       sort_keys=True))
 
         json_file.close()
 
@@ -85,3 +87,4 @@ class Hosts(object):
         """
         if host in self.hosts.keys():
             self.hosts[host].diff_index_page()
+            self.hosts[host].match_scan([{'simple': True, 'value': 'captcha'}])

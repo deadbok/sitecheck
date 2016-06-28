@@ -3,7 +3,7 @@
 Created on 11/06/2016
 
 :copyright: (c) 2016 by Martin Grønholdt.
-:license: GPLv3, see LICENSE for more details.
+:license: MIT, see LICENSE for more details.
 '''
 import os.path
 import re
@@ -15,6 +15,11 @@ from commands import get_simple_cmd_output
 
 IP_REGEXP = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
 HOST_REGEXP = r'from\s((\w+\.)+\w+)\s+'
+
+
+def time_stamp(in_datetime, epoch=datetime(1970, 1, 1)):
+    unix_time = in_datetime - epoch
+    return (unix_time.microseconds + (unix_time.seconds + unix_time.days * 86400) * 10 ** 6) / 10 ** 6
 
 
 class Host(object):
@@ -33,12 +38,9 @@ class Host(object):
             self.replyHost = None
             self.time = 0
             self.diff = ''
+            self.msgs = []
         elif (host == '') and (host_dict is not None):
             self.from_dict(host_dict)
-
-    def time_stamp(self, in_datetime, epoch=datetime(1970, 1, 1)):
-        unix_time = in_datetime - epoch
-        return (unix_time.microseconds + (unix_time.seconds + unix_time.days * 86400) * 10 ** 6) / 10 ** 6
 
     def get_dict(self):
         host = dict()
@@ -48,6 +50,7 @@ class Host(object):
         host['replyHost'] = self.replyHost
         host['time'] = self.time
         host['diff'] = self.diff
+        host['msgs'] = self.msgs
         return host
 
     def from_dict(self, host_dict):
@@ -59,7 +62,15 @@ class Host(object):
         self.ipaddr = host_dict['ip']
         self.replyHost = host_dict['replyHost']
         self.time = host_dict['time']
-        self.diff = host_dict['diff']
+        if 'diff' in host_dict.keys():
+            self.diff = host_dict['diff']
+        else:
+            self.diff = ''
+
+        if 'msgs' in host_dict.keys():
+            self.msgs = host_dict['msgs']
+        else:
+            self.msgs = []
 
     def ping(self):
         """
@@ -91,7 +102,7 @@ class Host(object):
         else:
             self.ipaddr = "Unknown"
 
-        self.time = self.time_stamp(datetime.utcnow())
+        self.time = time_stamp(datetime.utcnow())
 
     def diff_index_page(self):
         """
@@ -116,7 +127,7 @@ class Host(object):
             log.err("Could not write: " + index_file_name)
 
         if os.path.isfile(index_file_name + ".old"):
-            print("Diffing: " + index_file_name)
+            log.msg("Diffing: " + index_file_name)
             # diff command
             cmd = "diff -u1 " + index_file_name + ".old " + index_file_name
             # Run
@@ -124,3 +135,20 @@ class Host(object):
             self.diff = res[1]
         else:
             self.diff = "No old index"
+
+        self.time = time_stamp(datetime.utcnow())
+
+    def match_scan(self, patterns):
+        """
+        Find matches in the index diff.
+        """
+        log.msg('Scanning diff for patterns.')
+        for pattern in patterns:
+            if (pattern['simple'] is True):
+                log.msg('Simple match: "' + pattern['value'] + '"')
+                i = 0
+                for line in self.diff.split('\n'):
+                    i += 1
+                    if line.find(pattern['value']) != -1:
+                        self.msgs.append({'score': 'good', 'msg': str(i) + ':"' + pattern['value'] +
+                                         '": ' + line})
