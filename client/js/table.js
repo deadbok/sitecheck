@@ -91,7 +91,7 @@ function select_sort()
 		$(this).children('#arrow').toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
 	}
 	//Trigger sort and render.
-	sorted_keys = [];
+	sort_keys = [];
 	$('tbody[id$="_body"]').remove();
 	for (var host in hosts)
 	{
