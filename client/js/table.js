@@ -100,7 +100,8 @@ function select_sort()
 		if (hosts.hasOwnProperty(host))
 		{
 			hosts[host].rendered = false;
-			render(hosts[host]);
+			//render(hosts[host]);
+			setTimeout(render.bind(null, hosts[host]), 0);
 		}
 	}
 }
