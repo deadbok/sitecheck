@@ -201,7 +201,7 @@
 				<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
 				<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
 				<td id="{{:id}}_ip">{{:ip}}</td>
-				<td id="{{:id}}_state">{{:state}}</td>
+				<td id="{{:id}}_state" class="sc-{{:state}}">{{:state_msg}}</td>
 				<td id="{{:id}}_replyHost">{{:replyHost}}</td>
 				<td id="{{:id}}_time">{{:time}}</td>
 				<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
@@ -237,6 +237,8 @@
 		{
 		    $('#con_state').toggleClass('sc-offline sc-online');
 		    $('#con_state').toggleClass('fa-unlink fa-link');
+			hosts = {};
+			sort_keys = [];
 		}
 		
 		protocol.onhost = function(host)

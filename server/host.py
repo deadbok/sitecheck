@@ -33,7 +33,8 @@ class Host(object):
         """
         if (host != '') and (host_dict is None):
             self.name = host
-            self.state = 'None'
+            self.state = 'neutral'
+            self.state_msg = 'None'
             self.ipaddr = None
             self.replyHost = None
             self.time = 0
@@ -46,6 +47,7 @@ class Host(object):
         host = dict()
         host['name'] = self.name
         host['state'] = self.state
+        host['state_msg'] = self.state_msg
         host['ip'] = self.ipaddr
         host['replyHost'] = self.replyHost
         host['time'] = self.time
@@ -59,6 +61,10 @@ class Host(object):
         """
         self.name = host_dict['name']
         self.state = host_dict['state']
+        if 'state_msg' in host_dict.keys():
+            self.state_msg = host_dict['state_msg']
+        else:
+            self.state_msg = 'None'
         self.ipaddr = host_dict['ip']
         self.replyHost = host_dict['replyHost']
         self.time = host_dict['time']
@@ -66,7 +72,6 @@ class Host(object):
             self.diff = host_dict['diff']
         else:
             self.diff = ''
-
         if 'msgs' in host_dict.keys():
             self.msgs = host_dict['msgs']
         else:
@@ -75,6 +80,8 @@ class Host(object):
     def ping(self):
         """
         Ping the host and extract status from the command.
+        
+        @todo: Generate sane output when command fails.
         """
         # ping command
         cmd = "ping -c 1 " + self.name.strip()
@@ -84,9 +91,11 @@ class Host(object):
         log.msg('Ping output: ' + res[1])
 
         if res[0] == 0:
-            self.state = 'Ping response'
+            self.state_msg = 'Ping response'
+            self.state = 'good'
         else:
-            self.state = 'No answer'
+            self.state = 'bad'
+            self.state_msg = 'No answer'
 
         host_re = re.compile(HOST_REGEXP)
         re_host = host_re.search(res[1])
@@ -107,11 +116,19 @@ class Host(object):
     def diff_index_page(self):
         """
         Diff /index.html of the host with last copy.
+        
+        @todo: Generate sane output when command fails.
         """
         # curl command
         cmd = "curl -s -L " + self.name.strip()
         # Run
         res = get_simple_cmd_output(cmd)
+        if res[0] == 0:
+            self.state_msg = 'Index response'
+            self.state = 'good'
+        else:
+            self.state = 'bad'
+            self.state_msg = 'No answer'
 
         index_file_name = "sites/" + self.name + "-index.html"
         # Rename the old one if it is there
@@ -132,9 +149,18 @@ class Host(object):
             cmd = "diff -u1 " + index_file_name + ".old " + index_file_name
             # Run
             res = get_simple_cmd_output(cmd)
+            if res[0] > 1:
+                self.state = 'bad'
+                self.state_msg = 'Index diff failed'
+
             self.diff = res[1]
+            if self.diff != '':
+                self.state = 'neutral'
+                self.state_msg = 'Index changed'
         else:
             self.diff = "No old index"
+            self.state = 'neutral'
+            self.state_msg = 'No previous index'
 
         self.time = time_stamp(datetime.utcnow())
 
@@ -149,3 +175,10 @@ class Host(object):
                 matches = pattern.match(line)
                 if len(matches.matches) > 0:
                     self.msgs.append(matches.get_dict())
+                    for match in matches.matches:
+                        if (((self.state == 'good') or
+                            (self.state == 'neutral')) and
+                            ((match.score == 'neutral') or
+                             (match.score == 'bad'))):
+                            self.state = match.score
+
