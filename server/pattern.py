@@ -20,6 +20,13 @@ class Pattern(object):
         """
         Match a string.
         """
+        matches = Match(self)
         if self.simple:
-            if string.find(self.value) != -1:
-                self.msgs.append({'score': 'good', 'msg': string})
+            pos = string.find(self.value)
+            if pos != -1:
+                matches.add_match(string[:pos], 'neutral')
+                matches.add_match(self.value, 'good')
+                # Process the rest.
+                matches.add_matches(self.match(string[pos + len(self.value):]))
+
+        return matches

@@ -4,7 +4,6 @@
  * 
  * Copyright (c) 2016 Martin Bo Kristensen Grønholdt
  */
-
 function Protocol()
 {
     if ("WebSocket" in window)

@@ -9,6 +9,7 @@ import io
 import json
 import os.path
 from host import Host
+from pattern import Pattern
 
 
 class Hosts(object):
@@ -24,11 +25,11 @@ class Hosts(object):
         self.filename = name.strip() + '.json'
         self.hosts = dict()
         if not os.path.isfile(self.filename):
-            self.saveJSON()
+            self.save_json()
         else:
-            self.loadJSON()
+            self.load_json()
 
-    def loadJSON(self):
+    def load_json(self):
         """
         Load host data from a JSON formatted text file.
         """
@@ -41,7 +42,7 @@ class Hosts(object):
 
         json_file.close()
 
-    def saveJSON(self):
+    def save_json(self):
         """
         Save host data to a JSON formatted text file.
         """
@@ -54,25 +55,28 @@ class Hosts(object):
 
         json_file.close()
 
-    def addHost(self, host='', host_dict=None):
+    def add_host(self, host='', host_dict=None):
         """
         Add host.
         """
-        if ((host != '') and (host_dict is None)):
+        if (host != '') and (host_dict is None):
             self.hosts[host] = Host(host)
-        elif ((host == '') and (host_dict is not None)):
+        elif (host == '') and (host_dict is not None):
             self.hosts[host] = Host(host_dict=host_dict)
 
-    def addHosts(self, hosts):
+    def add_hosts(self, hosts):
+        """
+        Add a list of host object.
+        """
         for host in hosts:
-            self.addHost(host=host)
+            self.add_host(host=host)
 
-    def addHostDicts(self, dicts):
+    def add_host_dicts(self, dicts):
         """
         Add hosts from a list of dictionaries.
         """
         for host_dict in dicts:
-            self.addHost(host_dict=host_dict)
+            self.add_host(host_dict=host_dict)
 
     def ping(self, host):
         """
@@ -87,4 +91,4 @@ class Hosts(object):
         """
         if host in self.hosts.keys():
             self.hosts[host].diff_index_page()
-            self.hosts[host].match_scan([{'simple': True, 'value': 'captcha'}])
+            self.hosts[host].match_scan([Pattern('captcha', True)])

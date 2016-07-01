@@ -8,8 +8,34 @@ Stores matches found in an index.html diff.
 
 
 class Match(object):
-    def __init__(self):
+    """
+    Object to store matches for a pattern.
+    """
+    def __init__(self, pattern):
+        """
+        Constructor
+        """
         self.matches = list()
+        self.pattern = pattern
 
-    def addMatch(self, string, score):
+    def add_match(self, string, score):
+        """
+        Add a match to the list.
+        """
         self.matches.append({'msg': string, 'score': score})
+
+    def add_matches(self, matches):
+        """
+        Add a matches from another object.
+        """
+        if matches is not None:
+            self.matches += matches.matches
+
+    def get_dict(self):
+        """
+        Get a dictionary representation of this match object.
+        """
+        ret = dict()
+        ret['pattern'] = self.pattern.value
+        ret['matches'] = self.matches
+        return ret

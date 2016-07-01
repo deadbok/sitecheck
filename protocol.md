@@ -51,3 +51,25 @@ Ping the hosts listed in `hosts`
   
 `length` is the number of hosts in the response. `hosts` is the list of host
 data.
+
+## Host data
+
+	{
+        "diff": "",
+        "ip": "",
+        "msgs": [
+            {
+                "matches": [
+                    {
+                        "msg": "",
+                        "score": ""
+                    }
+                ],
+                "pattern": ""
+            }
+        ],
+        "name": "",
+        "replyHost": "",
+        "state": "",
+        "time": 0
+    }

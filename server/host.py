@@ -144,11 +144,7 @@ class Host(object):
         """
         log.msg('Scanning diff for patterns.')
         for pattern in patterns:
-            if (pattern['simple'] is True):
-                log.msg('Simple match: "' + pattern['value'] + '"')
-                i = 0
-                for line in self.diff.split('\n'):
-                    i += 1
-                    if line.find(pattern['value']) != -1:
-                        self.msgs.append({'score': 'good', 'msg': str(i) + ':"' + pattern['value'] +
-                                         '": ' + line})
+            for line in self.diff.split('\n'):
+                matches = pattern.match(line)
+                if len(matches.matches) > 0:
+                    self.msgs.append(matches.get_dict())

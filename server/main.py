@@ -18,7 +18,7 @@ from twisted.python import log
 from hosts import Hosts
 
 
-__version__ = '0.3.3'
+__version__ = '0.4.0'
 HOSTS = Hosts('test')
 QUEUE = Queue()
 
@@ -83,10 +83,10 @@ class SiteCheckProtocol(WebSocketServerProtocol):
                 log.msg('Adding: ' + str(msg['hosts']))
                 for host in msg['hosts']:
                     if host != '':
-                        QUEUE.put((host, HOSTS.addHost,
+                        QUEUE.put((host, HOSTS.add_host,
                                    self.send_hosts_by_name))
             QUEUE.join()
-            HOSTS.saveJSON()
+            HOSTS.save_json()
         else:
             log.msg('Binary message received and discarded.')
 
