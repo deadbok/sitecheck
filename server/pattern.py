@@ -16,17 +16,19 @@ class Pattern(object):
         self.simple = simple
         self.value = pattern
 
-    def match(self, string):
+    def match(self, line, add_all=False):
         """
-        Match a string.
+        Match a line.
         """
         matches = Match(self)
         if self.simple:
-            pos = string.find(self.value)
-            if pos != -1:
-                matches.add_match(string[:pos], 'neutral')
-                matches.add_match(self.value, 'good')
+            pos = str.lower(line).find(self.value)
+            if (pos != -1) :
+                matches.add_match(line[:pos], 'neutral')
+                matches.add_match(line[pos:pos + len(self.value)], 'good')
                 # Process the rest.
-                matches.add_matches(self.match(string[pos + len(self.value):]))
+                matches.add_matches(self.match(line[pos + len(self.value):], add_all=True))
+            elif add_all:
+                matches.add_match(line, 'neutral')
 
         return matches

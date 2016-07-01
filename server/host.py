@@ -143,6 +143,7 @@ class Host(object):
         Find matches in the index diff.
         """
         log.msg('Scanning diff for patterns.')
+        self.msgs = []
         for pattern in patterns:
             for line in self.diff.split('\n'):
                 matches = pattern.match(line)
