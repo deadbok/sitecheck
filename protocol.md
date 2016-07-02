@@ -71,5 +71,6 @@ data.
         "name": "",
         "replyHost": "",
         "state": "",
+        "state_msg": "", 
         "time": 0
     }
