@@ -56,8 +56,8 @@
 		<div>
 			<div class="btn-group" role="group">
 				<!-- Actions -->
-				<button type="button" class="btn btn-default glyphicon glyphicon-plus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Add a host."></button>
-				<button type="button" class="btn btn-default glyphicon glyphicon-minus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Remove a host."></button>
+				<button type="button" id="addHostButton" class="btn btn-default glyphicon glyphicon-plus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Add a host."></button>
+				<button type="button" id="removeHostButton" class="btn btn-default glyphicon glyphicon-minus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Remove a host."></button>
 			</div>
 			<div class="btn-group" role="group">
 				<button type="button" class="btn btn-default" id="ping" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Ping a host.">Ping</button>
@@ -116,7 +116,7 @@
 			</div>
 		</div>
 
-		<!-- Modal -->
+		<!-- Import server list modal -->
 		<div id="importHostModal" class="modal fade" role="dialog" tabindex="-1">
 			<div class="modal-dialog modal-sm">
 				<!-- Modal content-->
@@ -141,6 +141,52 @@
 			</div>
 		</div>
 		
+		<!-- Add host modal -->
+		<div id="addHostModal" class="modal fade" role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-sm">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Input new host name...</h4>
+					</div>
+					<form enctype="multipart/form-data" method="post"
+						id="new_host_form">
+						<div class="modal-body">
+							<input name="newhost" type="text" id="newhost" class="form-control" />
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" id="newhostok"
+								data-dismiss="modal">OK</button>
+							<button type="button" class="btn btn-default"
+								data-dismiss="modal">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- remove host modal -->
+		<div id="removeHostModal" class="modal fade" role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-sm">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Remove the following host(s)?</h4>
+					</div>
+					<div id="removeHostList" class="modal-body">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" id="removeHostYes"
+							data-dismiss="modal">Yes</button>
+						<button type="button" class="btn btn-default"
+							data-dismiss="modal">No</button>
+					</div>
+				</div>
+			</div>
+		</div>
+			
 		<br />
 		
 		<div class="loader-container" id="loader-container">
@@ -304,6 +350,29 @@
 			    	};
 			    	reader.readAsText(file);
 				});
+		
+		$('#addHostButton').click(
+				function() {
+					$('#addHostModal').modal('show');
+				});
+		
+		$('#removeHostButton').click(
+				function() {
+					var host_names = $("#host:checked").map(function() {
+						return this.value;
+					}).get();
+					$('#removeHostList').html((host_names).toString());
+					$('#removeHostModal').modal('show');
+				});
+		
+		$('#removeHostYes').click(
+				function() {
+					var host_names = $("#host:checked").map(function() {
+						return this.value;
+					}).get();
+					protocol.remove(host_names);
+				})
+
 	</script>
 </body>
 </html>

@@ -8,13 +8,24 @@ function Protocol()
 {
     if ("WebSocket" in window)
     {
-	this.supported = true;
+    	this.supported = true;
     }
     else
     {
-	this.supported = false;
+    	this.supported = false;
     }
     this.isopen = false;
+    
+    var loc = window.location, new_uri;
+    if (loc.protocol === "https:")
+    {
+        this.uri = "wss:";
+    }
+    else
+    {
+    	this.uri = "ws:";
+    }
+    this.uri += "//" + loc.host + ":5683";
 }
 
 Protocol.prototype.open = function()
@@ -22,7 +33,7 @@ Protocol.prototype.open = function()
     if (this.supported)
     {
     	// Open a socket.
-    	this.ws = new WebSocket("ws://localhost:5683");
+    	this.ws = new WebSocket(this.uri);
     	var parent = this;
     
     	this.ws.onopen = function()
@@ -79,5 +90,13 @@ Protocol.prototype.diff = function(host_names)
 	if (this.supported && this.isopen)
 	{
 		this.ws.send('{ "action" : "diff", "hosts" : ' + JSON.stringify(host_names) + ' }');		
+	}
+}
+
+Protocol.prototype.remove = function(host_names)
+{
+	if (this.supported && this.isopen)
+	{
+		this.ws.send('{ "action" : "remove", "hosts" : ' + JSON.stringify(host_names) + ' }');		
 	}
 }
