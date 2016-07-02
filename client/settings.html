@@ -16,7 +16,7 @@
 			<![endif]-->
 <link rel="stylesheet" href="css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="css/custom.css">
-<title>Site check - About</title>
+<title>Site check- Settings</title>
 </head>
 <body>
 	<nav class="navbar navbar-inverse">
@@ -40,8 +40,8 @@
 				id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li><a href="index.html">Home</a></li>
-					<li><a href="settings.html">Settings</a></li>
-					<li class="active"><a href="about.html">About</a></li>
+					<li class="active"><a href="settings.html">Settings</a></li>
+					<li><a href="about.html">About</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li><span id="n_hosts" class="badge">0</span> <span
@@ -54,27 +54,28 @@
 		</div>
 		<!-- /.container-fluid -->
 	</nav>
-	<div class="container sc-content">
-		<h2>About site status</h2>
-		<p>Site check is a client/server application to keep track of a
-			collection of hosts.</p>
-		<br />
-		<h3>Libraries</h3>
-		<p>Site check uses these fine libraries to make things tick.</p>
-		<ul>
-			<li>Autobahn: <a href="http://autobahn.ws/">http://autobahn.ws</a></li>
-			<li>Bootstrap: <a href="http://http://getbootstrap.com/">http://http://getbootstrap.com</a></li>
-			<li>Bootstrap-filestyle: <a
-				href="http://http://markusslima.github.io/bootstrap-filestyle//">http://http://markusslima.github.io/bootstrap-filestyle/</a></li>
-			<li>Date.format: <a
-				href="https://github.com/jacwright/date.format">https://github.com/jacwright/date.format</a></li>
-			<li>Font Awesome: <a href="http://fontawesome.io/">http://fontawesome.io/</a></li>
-			<li>JQuery: <a href="http://jquery.com/">http://jquery.com</a></li>
-			<li>JSRender: <a href="https://github.com/BorisMoore/jsrender">https://github.com/BorisMoore/jsrender</a></li>
-		</ul>
-		<h3>Services</h3>
-		<p>Site status uses <a href="http://virustotal.com">VirusTotal (http://virustotal.com)</a> to check the virus status of the host</p>
-		<br />
+	<div class="container-fluid sc-content">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+		    	<h3 class="panel-title">Virus Total</h3>
+		  	</div>
+		  	<div class="panel-body">
+	    		<form>
+  					<div class="form-group">
+    					<label for="virustotalKey">VirusTotal API key</label>
+    					<input type="text" class="form-control" id="VirustotalKey" placeholder="VirusTotal API key">
+  					</div>
+				</form>
+		  	</div>
+		</div>
+		<div class="panel panel-default">
+		  	<div class="panel-heading">
+		    	<h3 class="panel-title">Pattern matcher</h3>
+		  	</div>
+		  	<div class="panel-body">
+		    	Panel content
+		  	</div>
+		</div>
 	</div>
 
 	<footer class="navbar-inverse">
