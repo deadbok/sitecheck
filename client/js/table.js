@@ -32,10 +32,7 @@ function expand_all()
 						    '_detail', '_expand'))
 				    .removeClass(
 					    'glyphicon-collapse-up glyphicon-collapse-down');
-			    $(
-				    '#'
-					    + $(this).attr('id').replace(
-						    '_detail', '_expand'))
+			    $('#' + $(this).attr('id').replace('_detail', '_expand'))
 				    .addClass('glyphicon-collapse-up');
 			});
     }
@@ -127,12 +124,14 @@ function escapeHtml(string)
 
 function addHost(host)
 {
+	if (host.name === null)
+		host.name = 'null';
 	//Generate CSS safe id.
 	host.id = host.name.replace('.', '_').replace('-', '_');
 	//Generate IP sort key.
-	if ((host.ip == 'Unknown') || (host.ip == undefined))
+	if ((host.ip == 'Unknown') || (host.ip === undefined) || (host.ip === null))
 	{
-		host.ip = 'Unknown'
+		host.ip = 'Unknown';
 		host.ip_value = 0;
 	}
 	else
@@ -141,19 +140,19 @@ function addHost(host)
 		host.ip_value = ip_split[0]*0x1000000 + ip_split[1]*0x10000 + ip_split[2]*0x100 + ip_split[3]*1;
 	}
 	//Generate time sort key.
-	if ((host.time == undefined) || (host.time == 'Never'))
+	if ((host.time === undefined) || (host.time == 'Never'))
 	{
 		host.time = 0;	
 	}
 	//UNIX time to human readable
-	host.time_value = host.time
-	dt = new Date(host.time * 1000) 
+	host.time_value = host.time;
+	dt = new Date(host.time * 1000); 
 	host.time = new Date(host.time * 1000).format('H:i:s j/n-Y');
 	//Escape the diff
 	host.diff_escape = escapeHtml(host.diff);
 	
 	//Check if this is a new host.
-	if (hosts[host.name] != undefined)
+	if (hosts[host.name] !== undefined)
 	{
 		//It is not, copy values for UI state from the old one.
 		host.visible = hosts[host.name].visible;
@@ -177,6 +176,7 @@ function addHost(host)
 //Insert a host entry in the table, sorting them on the go.
 function render(host)
 {
+	var host_html = "";
 	//Remove the previous entry if there is one.
 	if (host.rendered)
 	{
@@ -185,22 +185,21 @@ function render(host)
 		
 	}
 	
-	if (sort_value == undefined)
+	if (sort_value === undefined)
 	{
 		//No sort just append.
 		sort_keys.push(host.name);
-		var host_html = host_row_tmpl.render(host);
+		host_html = host_row_tmpl.render(host);
 		$('#host_table').append(host_html);
 	}
 	else
 	{
-		function sort_host(a, b)
+		var sort_host = function(a, b)
 		{
 			switch(sort_value)
 			{
 				case 'name':
 					return a[sort_value].localeCompare(b[sort_value]);
-					break;
 				case 'ip_value':
 					if ( a[sort_value] < b[sort_value])
 					{
@@ -217,10 +216,8 @@ function render(host)
 					break;
 				case 'state':
 					return a[sort_value].localeCompare(b[sort_value]);
-					break;
 				case 'replyHost':
 					return a[sort_value].localeCompare(b[sort_value]);
-					break;
 				case 'time_value':
 					if ( a[sort_value] < b[sort_value])
 					{
@@ -237,16 +234,15 @@ function render(host)
 					break;
 				case undefined:
 					return -1;
-					break;
 				default: console.log('Unknown sort entry: ' + sort_value);
 			}
-		}
+		};
 
-		if ( sort_keys.length == 0 )
+		if ( sort_keys.length === 0 )
 		{
 			//First entry.
 			sort_keys.push(host.name);
-			var host_html = host_row_tmpl.render(host);
+			host_html = host_row_tmpl.render(host);
 			$('#host_table').append(host_html);
 		}
 		else
@@ -254,7 +250,8 @@ function render(host)
 			
 			var sorted = false;
 			var i = 0;
-			var last_res = undefined;
+			var last_res;
+			
 			while ( (!sorted) && (i < sort_keys.length ) )
 			{
 				//Save the current sort value.
@@ -264,7 +261,7 @@ function render(host)
 				if ( (sort_keys.length == ( i + 1)) && ( res < 1) )
 				{
 					sort_keys.push(host.name);
-					var host_html = host_row_tmpl.render(host);
+					host_html = host_row_tmpl.render(host);
 					$('#host_table').append(host_html);
 					sorted = true;
 				}
@@ -273,7 +270,7 @@ function render(host)
 					if ( res > -1 )
 					{
 						//Insert before
-						var host_html = host_row_tmpl.render(host);
+						host_html = host_row_tmpl.render(host);
 						$('tbody[id$="' + hosts[sort_keys[i]].id + '_body"]').before(host_html);
 						sort_keys.splice(i, 0, host.name);
 						sorted = true;	

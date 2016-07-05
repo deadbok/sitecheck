@@ -29,17 +29,22 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         Send the complete data set a list of hosts.
         """
         response = dict()
+        response['version'] = __version__
+        response['total_hosts'] = len(HOSTS.hosts)
         response['hosts'] = list()
         for host in hosts.values():
             response['hosts'].append(host.get_dict())
             # Split in packages of 10
-            if (len(response['hosts']) == 10):
+            if len(response['hosts']) == 10:
                 response['length'] = len(response['hosts'])
                 self.sendMessage(json.dumps(response).encode('utf-8'), False)
                 response['hosts'] = list()
         # Send the rest
-        if ((len(response['hosts']) < 10) and (len(response['hosts']) > 0)):
+        if (len(response['hosts']) < 10) and (len(response['hosts']) > 0):
             response['length'] = len(response['hosts'])
+            self.sendMessage(json.dumps(response).encode('utf-8'), False)
+        elif len(response['hosts']) == 0:
+            response['length'] = 0
             self.sendMessage(json.dumps(response).encode('utf-8'), False)
 
     def send_hosts_by_name(self, hosts):
@@ -47,18 +52,25 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         Send the complete data set a list of host names.
         """
         response = dict()
+        response['version'] = __version__
+        response['total_hosts'] = len(HOSTS.hosts)
         response['length'] = len(hosts)
         response['hosts'] = list()
         for host in hosts:
-            response['hosts'].append(HOSTS.hosts[host].get_dict())
-            # Split in packages of 10
-            if (len(response) == 10):
-                response['length'] = len(response['hosts'])
-                self.sendMessage(json.dumps(response).encode('utf-8'), False)
-                response['hosts'] = list()
+            if host in HOSTS.hosts.keys():
+                response['hosts'].append(HOSTS.hosts[host].get_dict())
+                # Split in packages of 10
+                if (len(response) == 10):
+                    response['length'] = len(response['hosts'])
+                    self.sendMessage(json.dumps(response).encode('utf-8'),
+                                     False)
+                    response['hosts'] = list()
         # Send the rest
         if ((len(response) < 10) and (len(response) > 0)):
             response['length'] = len(response['hosts'])
+            self.sendMessage(json.dumps(response).encode('utf-8'), False)
+        elif len(response['hosts']) == 0:
+            response['length'] = 0
             self.sendMessage(json.dumps(response).encode('utf-8'), False)
 
     def onMessage(self, payload, isBinary):

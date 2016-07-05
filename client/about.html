@@ -58,7 +58,10 @@
 		<h2>About site status</h2>
 		<p>Site check is a client/server application to keep track of a
 			collection of hosts.</p>
-		<br />
+		<p>
+			Client version: <span id="client_version"> x.y.z</span><br />
+			Server version: <span id="server_version"> x.y.z</span>
+		</p>
 		<h3>Libraries</h3>
 		<p>Site check uses these fine libraries to make things tick.</p>
 		<ul>
@@ -91,10 +94,44 @@
 	<script src="js/client.js"></script>
 
 	<script type="text/javascript">
-		$(document).ready(function()
-		{
-    		$('#version').html(VERSION);
-		});
+	var protocol = new Protocol();
+	
+	//Change the UI status display when connected.
+	function protocol_onopen()
+	{
+	    $('#con_state').toggleClass('sc-offline sc-online');
+	    $('#con_state').toggleClass('fa-unlink fa-link');
+	    protocol.get_hosts( [] );
+	};
+	
+	function protocol_onlasthost()
+	{
+		$('#server_version').html(protocol.server_version);
+	};
+	
+
+	//Change the UI status display when disconnected.
+	function protocol_onclose()
+	{
+	    $('#con_state').toggleClass('sc-offline sc-online');
+	    $('#con_state').toggleClass('fa-unlink fa-link');
+	};
+	
+	//Open a connection to the server.
+	protocol.open(
+			{
+				onopen: protocol_onopen,
+				onlasthost: protocol_onlasthost,
+				onclose: protocol_onclose
+			});
+	
+	$(document).ready(function()
+	{
+		//Update version in the footer.
+		$('#version').html(VERSION);
+		//Update client versionin content.
+		$('#client_version').html(VERSION)
+	});
 	</script>
 </body>
 </html>
