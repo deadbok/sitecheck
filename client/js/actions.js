@@ -70,7 +70,7 @@ $('#removeHostButton').click(
 			var host_names = $("#host:checked").map(function() {
 				return this.value;
 			}).get();
-			$('#removeHostList').html((host_names).toString());
+			$('#removeHostList').html((host_names).join(' '));
 			$('#removeHostModal').modal('show');
 		});
 
