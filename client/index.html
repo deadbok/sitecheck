@@ -289,10 +289,15 @@
 			protocol.get_all_hosts();
 		}
 		
-		function protocol_onhost(host)
+		function protocol_onaddhost(host)
 		{
 			addHost(host);
 			render(host);
+		}
+		
+		function protocol_onremovehost(host)
+		{
+			removeHost(hosts[host]);
 		}
 		
 		function protocol_onlasthost()
@@ -315,7 +320,8 @@
 			protocol.open(
 					{
 						onopen: protocol_onopen,
-						onhost: protocol_onhost,
+						onaddhost: protocol_onaddhost,
+						onremovehost: protocol_onremovehost,
 						onlasthost: protocol_onlasthost,
 						onclose: protocol_onclose
 					});

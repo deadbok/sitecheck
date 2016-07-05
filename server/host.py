@@ -18,15 +18,17 @@ HOST_REGEXP = r'from\s((\w+\.)+\w+)\s+'
 
 
 def time_stamp(in_datetime, epoch=datetime(1970, 1, 1)):
+    """
+    Create a UNIX timesptamp from a datetime object.
+    """
     unix_time = in_datetime - epoch
     return (unix_time.microseconds + (unix_time.seconds + unix_time.days * 86400) * 10 ** 6) / 10 ** 6
 
 
-class Host(object):
+class Host:
     """
     List of servers to check.
     """
-
     def __init__(self, host='', host_dict=None):
         """
         Constructor.
@@ -44,6 +46,9 @@ class Host(object):
             self.from_dict(host_dict)
 
     def get_dict(self):
+        """
+        Create a dictionary from the host data.
+        """
         host = dict()
         host['name'] = self.name
         host['state'] = self.state
@@ -80,7 +85,7 @@ class Host(object):
     def ping(self):
         """
         Ping the host and extract status from the command.
-        
+
         @todo: Generate sane output when command fails.
         """
         # ping command
@@ -116,7 +121,7 @@ class Host(object):
     def diff_index_page(self):
         """
         Diff /index.html of the host with last copy.
-        
+
         @todo: Generate sane output when command fails.
         """
         # curl command
@@ -181,4 +186,3 @@ class Host(object):
                             ((match.score == 'neutral') or
                              (match.score == 'bad'))):
                             self.state = match.score
-

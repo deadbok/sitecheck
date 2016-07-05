@@ -12,7 +12,7 @@ from host import Host
 from pattern import Pattern
 
 
-class Hosts(object):
+class Hosts:
     """
     List of servers to check.
     """
@@ -47,7 +47,8 @@ class Hosts(object):
         Save host data to a JSON formatted text file.
         """
         with io.open(self.filename, 'w', encoding='utf-8') as json_file:
-            json_file.write(json.dumps([host.get_dict() for host in self.hosts.values()],
+            json_file.write(json.dumps([host.get_dict()
+                                        for host in self.hosts.values()],
                                        ensure_ascii=False,
                                        skipkeys=True,
                                        indent=4,
@@ -62,7 +63,7 @@ class Hosts(object):
         if (host != '') and (host_dict is None):
             self.hosts[host] = Host(host)
         elif (host == '') and (host_dict is not None):
-            self.hosts[host] = Host(host_dict=host_dict)
+            self.hosts[host_dict.name] = Host(host_dict=host_dict)
 
     def add_hosts(self, hosts):
         """
@@ -77,6 +78,22 @@ class Hosts(object):
         """
         for host_dict in dicts:
             self.add_host(host_dict=host_dict)
+
+    def remove_host(self, host='', host_dict=None):
+        """
+        Remove host.
+        """
+        if (host != '') and (host_dict is None):
+            del self.hosts[host]
+        elif (host == '') and (host_dict is not None):
+            del self.hosts[host_dict.name]
+
+    def remove_hosts(self, hosts):
+        """
+        Remove a list of host object.
+        """
+        for host in hosts:
+            self.remove_host(host=host)
 
     def ping(self, host):
         """

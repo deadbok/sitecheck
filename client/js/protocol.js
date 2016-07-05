@@ -51,17 +51,33 @@ Protocol.prototype.open = function(callbacks)
 
     	    parent.server_version = json_data.version;
     	    
+    	    var i = 0;
        	    // Run through the host names.
-        	for (var i = 0; i < json_data.length; i++)
-        	{
-        	    if (jQuery.isFunction(cbs.onhost))
-        	    {
-        	    	cbs.onhost(json_data.hosts[i]);
-        	    }
-        	}
+    	    if (json_data.length > -1)
+    	    {
+            	for (; i < json_data.length; i++)
+            	{
+            	    if (jQuery.isFunction(cbs.onaddhost))
+            	    {
+            	    	cbs.onaddhost(json_data.hosts[i]);
+            	    }
+            	}
+    	    }
+    	    else
+    	    {
+    	    	i = json_data.length;
+    	    	do
+    	    	{
+    	    		if (jQuery.isFunction(cbs.onremovehost))
+    	    		{
+    	    			cbs.onremovehost(json_data.hosts[Math.abs(i) - 1]);
+    	    		}
+    	    		i++;
+    	    	} while ( i < 0);
+    	    }
         	    
 	        // Last message.
-    	    if (json_data.length < 10)
+    	    if ((json_data.length < 10) && (json_data.length > -1))
     	    {
     	    	if (jQuery.isFunction(cbs.onlasthost))
         	    {
@@ -113,6 +129,14 @@ Protocol.prototype.add_hosts = function(hosts)
 
 };
 
+Protocol.prototype.remove_hosts = function(host)
+{
+	if (this.supported && this.isopen)
+	{
+		this.ws.send('{ "action" : "remove", "hosts" : ' + JSON.stringify(host) + ' }');		
+	}
+};
+
 Protocol.prototype.ping = function(host_names)
 {
 	if (this.supported && this.isopen)
@@ -126,13 +150,5 @@ Protocol.prototype.diff = function(host_names)
 	if (this.supported && this.isopen)
 	{
 		this.ws.send('{ "action" : "diff", "hosts" : ' + JSON.stringify(host_names) + ' }');		
-	}
-};
-
-Protocol.prototype.remove = function(host_names)
-{
-	if (this.supported && this.isopen)
-	{
-		this.ws.send('{ "action" : "remove", "hosts" : ' + JSON.stringify(host_names) + ' }');		
 	}
 };

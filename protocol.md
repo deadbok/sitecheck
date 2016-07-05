@@ -21,6 +21,7 @@ host to perform the action on. Only the `*` wildcard is supported
 ### Actions ###
 
  * add
+ * remove
  * diff
  * get
  * ping
@@ -28,6 +29,10 @@ host to perform the action on. Only the `*` wildcard is supported
 #### add ####
 
 Add the hosts listed in `hosts`.
+
+#### remove ####
+
+Remove the hosts listed in `hosts`.
  
 #### diff ####
 
@@ -51,12 +56,23 @@ with 0 hosts will be send as the last.
 	{
 		"version" : "0.0.0",
 		"total_hosts": 0,
-		"length" : 0,
-		"hosts" : [ "" ]
+		"length" : >-1,
+		"hosts" : [ { host_data } ]
 	}
   
 `length` is the number of hosts in the response. `hosts` is the list of host
 data.
+
+*If `length` is negative, the hosts has been removed*. 
+
+	{
+		"version" : "0.0.0",
+		"total_hosts": 0,
+		"length" : < 0,
+		"hosts" : [ host_data ]
+	}
+	
+`hosts` is the list of host names that has been removed.
 
 ### Host data ###
 

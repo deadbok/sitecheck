@@ -79,5 +79,5 @@ $('#removeHostYes').click(
 			var host_names = $("#host:checked").map(function() {
 				return this.value;
 			}).get();
-			protocol.remove(host_names);
+			protocol.remove_hosts(host_names);
 		});

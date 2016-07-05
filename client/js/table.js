@@ -173,6 +173,20 @@ function addHost(host)
 	$('#n_hosts').html(Object.keys(hosts).length);
 }
 
+function removeHost(host)
+{
+	if (host.rendered)
+	{
+		$('tbody[id$="' + host.id + '_body"]').remove();
+	}
+	delete hosts[host.name];
+	
+	var index = sort_keys.indexOf(host.name);
+	sort_keys.splice(index, 1);
+	
+	$('#n_hosts').html(Object.keys(hosts).length);
+}
+
 //Insert a host entry in the table, sorting them on the go.
 function render(host)
 {
