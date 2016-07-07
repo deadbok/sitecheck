@@ -1,39 +1,40 @@
+# encoding=utf-8
 """
 Main Site Check WebSockets server routines.
 
 :copyright: (c) 2016 by Martin Grønholdt.
 :license: MIT, see LICENSE for more details.
 """
-import os
-import sys
+
+
 import json
-import threading
 from queue import Queue
-from autobahn.twisted.websocket import WebSocketServerFactory
 from autobahn.twisted.websocket import WebSocketServerProtocol
-from twisted.internet import reactor
+from autobahn.twisted.websocket import WebSocketServerFactory
 from twisted.python import log
 
-from hosts import Hosts
-
-
-__version__ = '0.4.4'
-HOSTS = Hosts('test')
 QUEUE = Queue()
 
 
-class SiteCheckProtocol(WebSocketServerProtocol):
+class SiteStatusProtocol(WebSocketServerProtocol):
     """
     Server side implementation of the WebSocket protocol.
     """
-    def send_hosts(self, hosts):
+    def _init_response(self):
         """
-        Send the complete data set a list of hosts.
+        Create a response dictionary with standard fields populated.
         """
         response = dict()
-        response['version'] = __version__
-        response['total_hosts'] = len(HOSTS.hosts)
+        response['version'] = self.factory.state.server['version']
+        response['total_hosts'] = len(self.factory.state.hosts.hosts)
         response['hosts'] = list()
+        return response
+
+    def send_hosts(self, hosts):
+        """
+        Send the complete data set for a list of hosts.
+        """
+        response = self._init_response()
         for host in hosts.values():
             response['hosts'].append(host.get_dict())
             # Split in packages of 10
@@ -53,14 +54,10 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         """
         Send the complete data set for a list of host names.
         """
-        response = dict()
-        response['version'] = __version__
-        response['total_hosts'] = len(HOSTS.hosts)
-        response['length'] = len(hosts)
-        response['hosts'] = list()
+        response = self._init_response()
         for host in hosts:
-            if host in HOSTS.hosts.keys():
-                response['hosts'].append(HOSTS.hosts[host].get_dict())
+            if host in self.factory.state.hosts.hosts.keys():
+                response['hosts'].append(self.factory.state.hosts.hosts[host].get_dict())
                 # Split in packages of 10
                 if len(response) == 10:
                     response['length'] = len(response['hosts'])
@@ -79,9 +76,7 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         """
         Send the host names for a list of removed host names.
         """
-        response = dict()
-        response['version'] = __version__
-        response['total_hosts'] = len(HOSTS.hosts)
+        response = self._init_response()
         response['length'] = -len(hosts)
         response['hosts'] = hosts
         self.sendMessage(json.dumps(response).encode('utf-8'), False)
@@ -91,7 +86,7 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         Get data for a list of host names. `*` for all.
         """
         if hosts[0] == '*':
-            self.send_hosts(HOSTS.hosts)
+            self.send_hosts(self.factory.state.hosts.hosts)
         else:
             self.send_hosts_by_name(hosts)
 
@@ -101,7 +96,7 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         """
         for host in hosts:
             log.msg('Host: ' + host)
-            QUEUE.put((host, HOSTS.diff, self.send_hosts_by_name))
+            QUEUE.put((host, self.factory.state.hosts.diff, self.send_hosts_by_name))
 
     def ping(self, hosts):
         """
@@ -109,7 +104,7 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         """
         for host in hosts:
             log.msg('Host: ' + host)
-            QUEUE.put((host, HOSTS.ping, self.send_hosts_by_name))
+            QUEUE.put((host, self.factory.state.hosts.ping, self.send_hosts_by_name))
 
     def add(self, hosts):
         """
@@ -118,7 +113,7 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         log.msg('Adding: ' + str(hosts))
         for host in hosts:
             if host != '':
-                QUEUE.put((host, HOSTS.add_host, self.send_hosts_by_name))
+                QUEUE.put((host, self.factory.state.hosts.add_host, self.send_hosts_by_name))
 
     def remove(self, hosts):
         """
@@ -127,7 +122,7 @@ class SiteCheckProtocol(WebSocketServerProtocol):
         log.msg('Removing: ' + str(hosts))
         for host in hosts:
             if host != '':
-                QUEUE.put((host, HOSTS.remove_host,
+                QUEUE.put((host, self.factory.state.hosts.remove_host,
                            self.send_removed_hosts_by_name))
 
     messages_handlers = {'get': get, 'diff': diff, 'ping': ping,
@@ -148,48 +143,17 @@ class SiteCheckProtocol(WebSocketServerProtocol):
 
         # Process the queue.
         QUEUE.join()
-        HOSTS.save_json()
+
+        self.factory.state.json_export()
 
 
-class StatusThread(threading.Thread):
+class SiteStatusFactory(WebSocketServerFactory):
     """
-    Thread to do processing of request from the client.
+    Factory to a SiteStatus servers and make a JSON files data available.
     """
-    def __init__(self):
-        """
-        Constructor.
-        """
-        threading.Thread.__init__(self)
 
-    def run(self):
-        """
-        Perform the action, all data and functions are retrieved from the
-        queue.
-        """
-        while True:
-            action = QUEUE.get()
+    protocol = SiteStatusProtocol
 
-            action[1](action[0])
-            action[2]([action[0]])
-
-            QUEUE.task_done()
-
-
-if __name__ == '__main__':
-    log.startLogging(sys.stdout)
-
-    FACTORY = WebSocketServerFactory(u"ws://127.0.0.1:5683")
-    FACTORY.protocol = SiteCheckProtocol
-
-    # Create directory for diffs if needed.
-    if not os.path.isdir('sites'):
-        os.mkdir('sites')
-
-    # Create the queue and thread pool.
-    for i in range(10):
-        t = StatusThread()
-        t.daemon = True
-        t.start()
-
-    reactor.listenTCP(5683, FACTORY)
-    reactor.run()
+    def __init__(self, wsuri, state):
+        WebSocketServerFactory.__init__(self, wsuri)
+        self.state = state

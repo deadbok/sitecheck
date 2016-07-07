@@ -69,7 +69,7 @@ data.
 		"version" : "0.0.0",
 		"total_hosts": 0,
 		"length" : < 0,
-		"hosts" : [ host_data ]
+		"hosts" : [ host_names ]
 	}
 	
 `hosts` is the list of host names that has been removed.

@@ -146,8 +146,15 @@ function addHost(host)
 	}
 	//UNIX time to human readable
 	host.time_value = host.time;
-	dt = new Date(host.time * 1000); 
-	host.time = new Date(host.time * 1000).format('H:i:s j/n-Y');
+	if (host.time === 0)
+	{
+		host.time = "Never";
+	}
+	else
+	{
+    	dt = new Date(host.time * 1000); 
+    	host.time = new Date(host.time * 1000).format('H:i:s j/n-Y');
+	}
 	//Escape the diff
 	host.diff_escape = escapeHtml(host.diff);
 	

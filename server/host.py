@@ -10,7 +10,7 @@ import re
 from datetime import datetime
 from twisted.python import log
 
-from commands import get_simple_cmd_output
+from server.commands import get_simple_cmd_output
 
 
 IP_REGEXP = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
@@ -21,8 +21,7 @@ def time_stamp(in_datetime, epoch=datetime(1970, 1, 1)):
     """
     Create a UNIX timesptamp from a datetime object.
     """
-    unix_time = in_datetime - epoch
-    return (unix_time.microseconds + (unix_time.seconds + unix_time.days * 86400) * 10 ** 6) / 10 ** 6
+    return (in_datetime - epoch).total_seconds()
 
 
 class Host:
@@ -43,50 +42,25 @@ class Host:
             self.diff = ''
             self.msgs = []
         elif (host == '') and (host_dict is not None):
-            self.from_dict(host_dict)
+            self.__dict__ = host_dict
 
     def get_dict(self):
         """
         Create a dictionary from the host data.
         """
-        host = dict()
-        host['name'] = self.name
-        host['state'] = self.state
-        host['state_msg'] = self.state_msg
-        host['ip'] = self.ipaddr
-        host['replyHost'] = self.replyHost
-        host['time'] = self.time
-        host['diff'] = self.diff
-        host['msgs'] = self.msgs
-        return host
+        return self.__dict__
 
     def from_dict(self, host_dict):
         """
         Set values from a dictionary.
         """
-        self.name = host_dict['name']
-        self.state = host_dict['state']
-        if 'state_msg' in host_dict.keys():
-            self.state_msg = host_dict['state_msg']
-        else:
-            self.state_msg = 'None'
-        self.ipaddr = host_dict['ip']
-        self.replyHost = host_dict['replyHost']
-        self.time = host_dict['time']
-        if 'diff' in host_dict.keys():
-            self.diff = host_dict['diff']
-        else:
-            self.diff = ''
-        if 'msgs' in host_dict.keys():
-            self.msgs = host_dict['msgs']
-        else:
-            self.msgs = []
+        self.__dict__ = host_dict
 
     def ping(self):
         """
         Ping the host and extract status from the command.
 
-        @todo: Generate sane output when command fails.
+        @todo: Generate sane output when the command fails.
         """
         # ping command
         cmd = "ping -c 1 " + self.name.strip()
@@ -122,7 +96,7 @@ class Host:
         """
         Diff /index.html of the host with last copy.
 
-        @todo: Generate sane output when command fails.
+        @todo: Generate sane output when the command fails.
         """
         # curl command
         cmd = "curl -s -L " + self.name.strip()

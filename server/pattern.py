@@ -5,7 +5,7 @@ Patterns for searching index.html diff's
 :copyright: (c) 2016 by Martin Grønholdt.
 :license: MIT, see LICENSE for more details.
 '''
-from match import Match
+from server.match import Match
 
 
 class Pattern(object):
@@ -23,11 +23,12 @@ class Pattern(object):
         matches = Match(self)
         if self.simple:
             pos = str.lower(line).find(self.value)
-            if (pos != -1) :
+            if pos != -1:
                 matches.add_match(line[:pos], 'neutral')
                 matches.add_match(line[pos:pos + len(self.value)], 'good')
                 # Process the rest.
-                matches.add_matches(self.match(line[pos + len(self.value):], add_all=True))
+                matches.add_matches(self.match(line[pos + len(self.value):],
+                                               add_all=True))
             elif add_all:
                 matches.add_match(line, 'neutral')
 

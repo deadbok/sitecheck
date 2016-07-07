@@ -9,7 +9,7 @@ from subprocess import Popen, PIPE
 import shlex
 import locale
 
-encoding = locale.getdefaultlocale()[1]
+ENCODING = locale.getdefaultlocale()[1]
 
 
 def get_simple_cmd_output(cmd):
@@ -21,8 +21,6 @@ def get_simple_cmd_output(cmd):
     # Return everything from stdout
     ret = Popen(args, stdout=PIPE)
     # Convert to string
-    ret_out = ret.communicate()[0].decode(encoding)
-    # Return code
-    ret = ret.returncode
+    ret_out = ret.communicate()[0].decode(ENCODING)
 
-    return(ret, ret_out)
+    return(ret.returncode, ret_out)
