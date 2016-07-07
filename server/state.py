@@ -25,6 +25,8 @@ class ServerState(object):
         self.filename = None
         self.server = dict()
         self.server['version'] = __version__
+        self.server['msg'] = ''
+        self.server['msg_state'] = 'neutral'
         self.hosts = Hosts()
         self.patterns = list()
         self.plugins = dict()

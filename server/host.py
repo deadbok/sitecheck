@@ -37,7 +37,7 @@ class Host:
             self.state = 'neutral'
             self.state_msg = 'None'
             self.ipaddr = None
-            self.replyHost = None
+            self.reply_host = None
             self.time = 0
             self.diff = ''
             self.msgs = []
@@ -79,9 +79,9 @@ class Host:
         host_re = re.compile(HOST_REGEXP)
         re_host = host_re.search(res[1])
         if re_host is not None:
-            self.replyHost = re_host.group(1)
+            self.reply_host = re_host.group(1)
         else:
-            self.replyHost = "Unknown"
+            self.reply_host = "Unknown"
 
         ip_re = re.compile(IP_REGEXP)
         ip_addr = ip_re.search(res[1])
@@ -155,6 +155,8 @@ class Host:
                 if len(matches.matches) > 0:
                     self.msgs.append(matches.get_dict())
                     for match in matches.matches:
+                        # Modify the global state of the host if things are
+                        # getting worse.
                         if (((self.state == 'good') or
                             (self.state == 'neutral')) and
                             ((match.score == 'neutral') or

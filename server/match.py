@@ -22,7 +22,7 @@ class Match(object):
         """
         Add a match to the list.
         """
-        self.matches.append({'msg': string, 'score': score})
+        self.matches.append({'string': string, 'score': score})
 
     def add_matches(self, matches):
         """
