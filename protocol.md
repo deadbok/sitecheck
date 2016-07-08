@@ -21,27 +21,20 @@ Request are send from the client, the server responds  when a ready.
 
 ### Actions ###
 
- * add
-   Add the hosts listed in `hosts`.
- * remove
-   Remove the hosts listed in `hosts`.
- * get
-   Get the data for the hosts listed in `hosts`.
+ * add: Add the objects listed in `param`.
+ * remove: Remove the objects listed in `param`.
+ * get: Get the data for the objects listed in `param`.
 
 ### `host` type specific actions ###
 
- * diff
-   Run a diff on the current and the last index page of the hosts listed in
-   `hosts`.
- * ping
-   Ping the hosts listed in `hosts`
+ * diff: Run a diff on the current and the last index page of the hosts listed
+   in `param`.
+ * ping: Ping the hosts listed in `param`
 
 ### Types ###
 
- * host
-   Work on a host.
- * pattern
-   Work on a pattern.
+ * host:  Work on a host.
+ * pattern: Work on a pattern.
    
 ### Parameters ###
 
