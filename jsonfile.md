@@ -49,21 +49,21 @@ introduction to the format.
 The root is an object with these possible members:
 
  * `server`: Server related data, mostly server configuration.
-  * `version`: The server version.
-  * `msg`: Any message from the server about its state.
-  * `msg_state`: `good`, `neutral`, or `bad`.
+     * `version`: The server version.
+     * `msg`: Any message from the server about its state.
+     * `msg_state`: `good`, `neutral`, or `bad`.
  * `hosts`: List of all hosts that Site Status is currently working with.
-  * `diff`: Data from a unified diff of the last and current index page.
-  * `ip`: IP address of the host.
-  * `msgs`: Messages from the active plug-ins and the pattern matcher.
-   * `matches`: Pattern matches in diff.
-    * `string`: Part of the line where a match is found.
-    * `score`: `good`, `neutral`, or `bad` indicating the score of the match.
-   * `pattern`: Pattern for the matches in `matches`
-  * `name`: The name of the host.
-  * `reply_host`: The name of the replying host.
-  * `state`: `good`, `neutral`, or `bad` indicating the overall host status.
-  * `state_msg`: Host state description.
-  * `time`: Last time a request to the host was made.
+     * `diff`: Data from a unified diff of the last and current index page.
+     * `ip`: IP address of the host.
+     * `msgs`: Messages from the active plug-ins and the pattern matcher.
+         * `matches`: Pattern matches in diff.
+             * `string`: Part of the line where a match is found.
+             * `score`: `good`, `neutral`, or `bad` indicating the score of the match.
+         * `pattern`: Pattern for the matches in `matches`
+     * `name`: The name of the host.
+     * `reply_host`: The name of the replying host.
+     * `state`: `good`, `neutral`, or `bad` indicating the overall host status.
+     * `state_msg`: Host state description.
+     * `time`: Last time a request to the host was made.
  * `patterns`: Data related to the pattern matching "engine".
  * `plugins`: Data related to plug ins.
