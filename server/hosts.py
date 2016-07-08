@@ -30,7 +30,7 @@ class Hosts:
         if (host != '') and (host_dict is None):
             self.hosts[host] = Host(host)
         elif (host == '') and (host_dict is not None):
-            self.hosts[host_dict.name] = Host(host_dict=host_dict)
+            self.hosts[host_dict['name']] = Host(host_dict=host_dict)
 
     def add_hosts_by_name(self, hosts):
         """
