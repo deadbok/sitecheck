@@ -20,6 +20,9 @@ class SiteStatusProtocol(WebSocketServerProtocol):
     """
     Server side implementation of the WebSocket protocol.
     """
+    def __init__(self, factory):
+        self.factory = factory
+
     def _init_response(self):
         """
         Create a response dictionary with standard fields populated.
@@ -56,8 +59,9 @@ class SiteStatusProtocol(WebSocketServerProtocol):
         """
         response = self._init_response()
         for host in hosts:
-            if host in self.factory.state.hosts.hosts.keys():
-                response['hosts'].append(self.factory.state.hosts.hosts[host].get_dict())
+            server_hosts = self.factory.state.hosts.hosts
+            if host in server_hosts.keys():
+                response['hosts'].append(server_hosts[host].get_dict())
                 # Split in packages of 10
                 if len(response) == 10:
                     response['length'] = len(response['hosts'])
@@ -96,7 +100,8 @@ class SiteStatusProtocol(WebSocketServerProtocol):
         """
         for host in hosts:
             log.msg('Host: ' + host)
-            QUEUE.put((host, self.factory.state.hosts.diff, self.send_hosts_by_name))
+            QUEUE.put((host, self.factory.state.hosts.diff,
+                       self.send_hosts_by_name))
 
     def ping(self, hosts):
         """
@@ -104,7 +109,8 @@ class SiteStatusProtocol(WebSocketServerProtocol):
         """
         for host in hosts:
             log.msg('Host: ' + host)
-            QUEUE.put((host, self.factory.state.hosts.ping, self.send_hosts_by_name))
+            QUEUE.put((host, self.factory.state.hosts.ping,
+                       self.send_hosts_by_name))
 
     def add(self, hosts):
         """
@@ -113,7 +119,8 @@ class SiteStatusProtocol(WebSocketServerProtocol):
         log.msg('Adding: ' + str(hosts))
         for host in hosts:
             if host != '':
-                QUEUE.put((host, self.factory.state.hosts.add_host, self.send_hosts_by_name))
+                QUEUE.put((host, self.factory.state.hosts.add_host,
+                           self.send_hosts_by_name))
 
     def remove(self, hosts):
         """
@@ -125,8 +132,11 @@ class SiteStatusProtocol(WebSocketServerProtocol):
                 QUEUE.put((host, self.factory.state.hosts.remove_host,
                            self.send_removed_hosts_by_name))
 
-    messages_handlers = {'get': get, 'diff': diff, 'ping': ping,
-                         'add': add, 'remove': remove}
+    message_handlers = {'get': {'host': get, 'pattern': None},
+                        'diff': {'host': diff, 'pattern': None},
+                        'ping': {'host': ping, 'pattern': None},
+                        'add': {'host': add, 'pattern': None},
+                        'remove': {'host': remove, 'pattern': None}}
 
     def onMessage(self, payload, isBinary):
         """
@@ -139,7 +149,24 @@ class SiteStatusProtocol(WebSocketServerProtocol):
         log.msg(payload.decode('utf8'))
         msg = json.loads(payload.decode('utf8'))
         log.msg('Action: ' + msg['action'])
-        self.messages_handlers[msg['action']](self, msg['hosts'])
+        if msg['action'] in self.message_handlers.keys():
+            if self.message_handlers[msg['action']][msg['type']] is not None:
+                self.message_handlers[msg['action']][msg['type']](self,
+                                                                  msg['param'])
+            else:
+                self.factory.state.config['msg'] = ('Unknown action "' +
+                                                    msg['action'] +
+                                                    '" on type "' +
+                                                    msg['type'])
+                self.factory.state.config['msg_state'] = 'bad'
+                log.err(self.factory.state.config['msg'])
+        else:
+            self.factory.state.config['msg'] = ('Unknown action "' +
+                                                msg['action'] +
+                                                '" on type "' +
+                                                msg['type'])
+            self.factory.state.config['msg_state'] = 'bad'
+            log.err(self.factory.state.config['msg'])
 
         # Process the queue.
         QUEUE.join()
@@ -157,3 +184,11 @@ class SiteStatusFactory(WebSocketServerFactory):
     def __init__(self, wsuri, state):
         WebSocketServerFactory.__init__(self, wsuri)
         self.state = state
+
+    def buildProtocol(self, addr):
+        """
+        Create an instance of a subclass of Protocol.
+        """
+        # pylint: disable=unused-argument
+        protocol = self.protocol(self)
+        return protocol

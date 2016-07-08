@@ -5,47 +5,50 @@ formatted messages.
 
 ## Request to the server ##
 
-Request are send from the client, the server responds asynchroniously when a
-response is ready.
+Request are send from the client, the server responds  when a ready.
 
 ### JSON messages structure ###
 
 	{
 		"action" : "",
-		"hosts" : [ "" ]
+		"type": "",
+		"param" : [ "" ]
 	}
-	
-`action` is the action that the server should perform. `hosts` is a list of
-host to perform the action on. Only the `*` wildcard is supported
-	
+		
+`action` is the action that the server should perform.
+`type` is the type of object to apply the action to/for.
+`param` is a list of identifiers of objects to work on. 
+
 ### Actions ###
 
  * add
+   Add the hosts listed in `hosts`.
  * remove
- * diff
+   Remove the hosts listed in `hosts`.
  * get
+   Get the data for the hosts listed in `hosts`.
+
+### `host` type specific actions ###
+
+ * diff
+   Run a diff on the current and the last index page of the hosts listed in
+   `hosts`.
  * ping
- 
-#### add ####
+   Ping the hosts listed in `hosts`
 
-Add the hosts listed in `hosts`.
+### Types ###
 
-#### remove ####
+ * host
+   Work on a host.
+ * pattern
+   Work on a pattern.
+   
+### Parameters ###
 
-Remove the hosts listed in `hosts`.
- 
-#### diff ####
-
-Run a diff on the current and the last index page of the hosts listed in
-`hosts`.
-
-#### get ####
-
-Get the data for the hosts listed in `hosts`.
-
-#### ping ####
-
-Ping the hosts listed in `hosts`
+ * For `host` type messages, `param` is a list of host names or the `*` wild
+   card.
+ * For `pattern` type messages, `param` is a list of patterns or the `*` wild
+   card.
 
 ## Response from the server ##
 

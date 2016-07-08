@@ -108,7 +108,7 @@ Protocol.prototype.get_hosts = function(hosts)
 {
 	if (this.supported && this.isopen)
 	{
-		this.ws.send('{ "action" : "get", "hosts" : "' + JSON.stringify(hosts) + '"}');
+		this.ws.send('{ "action" : "get", "type": "host", "param" : "' + JSON.stringify(hosts) + '"}');
 	}
 };
 
@@ -116,7 +116,7 @@ Protocol.prototype.get_all_hosts = function()
 {
 	if (this.supported && this.isopen)
 	{
-		this.ws.send('{ "action" : "get", "hosts" : [ "*" ]}');
+		this.ws.send('{ "action" : "get", "type": "host",  "param" : [ "*" ]}');
 	}
 };
 
@@ -124,7 +124,7 @@ Protocol.prototype.add_hosts = function(hosts)
 {
 	if (this.supported && this.isopen)
 	{
-		this.ws.send('{ "action" : "add", "hosts" : ' + JSON.stringify(hosts) + ' }');
+		this.ws.send('{ "action" : "add", "type": "host",  "param" : ' + JSON.stringify(hosts) + ' }');
 	}
 
 };
@@ -133,7 +133,7 @@ Protocol.prototype.remove_hosts = function(host)
 {
 	if (this.supported && this.isopen)
 	{
-		this.ws.send('{ "action" : "remove", "hosts" : ' + JSON.stringify(host) + ' }');		
+		this.ws.send('{ "action" : "remove", "type": "host",  "param" : ' + JSON.stringify(host) + ' }');		
 	}
 };
 
@@ -141,7 +141,7 @@ Protocol.prototype.ping = function(host_names)
 {
 	if (this.supported && this.isopen)
 	{
-		this.ws.send('{ "action" : "ping", "hosts" : ' + JSON.stringify(host_names) + ' }');		
+		this.ws.send('{ "action" : "ping", "type": "host",  "param" : ' + JSON.stringify(host_names) + ' }');		
 	}
 };
 
@@ -149,6 +149,6 @@ Protocol.prototype.diff = function(host_names)
 {
 	if (this.supported && this.isopen)
 	{
-		this.ws.send('{ "action" : "diff", "hosts" : ' + JSON.stringify(host_names) + ' }');		
+		this.ws.send('{ "action" : "diff", "type": "host",  "param" : ' + JSON.stringify(host_names) + ' }');		
 	}
 };
