@@ -93,6 +93,7 @@ $('#addPatternOK').click(
 			pattern.name = $('#newpatternname').val();
 		    pattern.type = $('[name="newpatterntype"]:checked').val();
 		    pattern.pattern = $('#newpattern').val();
+		    pattern.score = $('[name="newpatternscore"]:checked').val();
 			protocol.add_pattern(pattern);
 		});
 
@@ -110,11 +111,9 @@ $('#editPatternOK').click(
 			pattern.name = $('#editpatternname').val();
 		    pattern.type = $('[name="editpatterntype"]:checked').val();
 		    pattern.pattern = $('#editpattern').val();
+		    pattern.score = $('[name="editpatternscore"]:checked').val();
 			
-		    if (old_name !== pattern.name)
-		    {
-		    	protocol.remove_patterns([old_name]);
-		    }
+	    	protocol.remove_patterns([old_name]);
 		    protocol.add_pattern(pattern);
 		});
 

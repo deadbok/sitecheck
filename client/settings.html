@@ -83,6 +83,17 @@
     							<label for="newpattern">Pattern:</label>
 								<textarea rows="3" name="newpattern" id="newpattern" class="form-control" placeholder="Pattern"></textarea>
 							</div>
+							<div class="form-group">
+								<label class="radio-inline">
+  									<input type="radio" name="newpatternscore" id="newpatternscoregood" value="good"> Good
+								</label>
+								<label class="radio-inline">
+  									<input type="radio" name="newpatternscore" id="newpatternscoreneutral" value="neutral"> Neutral
+								</label>
+								<label class="radio-inline">
+  									<input type="radio" name="newpatternscore" id="newpatternscorebad" value="bad"> Bad
+								</label>
+							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" id="addPatternOK"
@@ -108,10 +119,11 @@
 						id="new_pattern_form">
 						<div class="modal-body">
 							<div class="form-group">
-    							<label for="editpatternname">Pattern name:</label>
+    							<label for="editpatternname">Name:</label>
 								<input name="editpatternname" type="text" id="editpatternname" class="form-control" placeholder="Name" />
 							</div>
 							<div class="form-group">
+								<label for="editpatterntype">Type: </label>
 								<label class="radio-inline">
   									<input type="radio" name="editpatterntype" id="editpatterntypesimple" value="simple"> Simple
 								</label>
@@ -122,6 +134,18 @@
 							<div class="form-group">
     							<label for="newpattern">Pattern:</label>
 								<textarea rows="3" name="editpattern" id="editpattern" class="form-control" placeholder="Pattern"></textarea>
+							</div>
+							<div class="form-group">
+								<label for="editpatternscore">Score: </label>
+								<label class="radio-inline">
+  									<input type="radio" name="editpatternscore" id="editpatternscoregood" value="good"> Good
+								</label>
+								<label class="radio-inline">
+  									<input type="radio" name="editpatternscore" id="editpatternscoreneutral" value="neutral"> Neutral
+								</label>
+								<label class="radio-inline">
+  									<input type="radio" name="editpatternscore" id="editpatternscorebad" value="bad"> Bad
+								</label>
 							</div>
 						</div>
 						<div class="modal-footer">
@@ -197,16 +221,20 @@
 	
 	<!-- jsRender template of a pattern entry. -->
 	<script id="patternTmpl" type="text/x-jsrender">
-		<div id="{{:id}}" name="{{:name}}">
-			<label>{{:name}}</label>
-			<div class="well">
-				<button type="button" id="remove_{{:id}}_button" class="pull-right btn btn-default btn-xs glyphicon glyphicon-minus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Remove this pattern."></button>
-				<button type="button" id="edit_{{:id}}_button" class="pull-right btn btn-default btn-xs glyphicon glyphicon-pencil" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Edit this pattern."></button>
+		<div class="panel panel-default" id="{{:id}}" name="{{:name}}">
+			<div class="panel-heading">
+		    	<h3 class="panel-title">{{:name}}
+					<button type="button" id="remove_{{:id}}_button" class="pull-right btn btn-default btn-xs glyphicon glyphicon-minus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Remove this pattern."></button>
+					<button type="button" id="edit_{{:id}}_button" class="pull-right btn btn-default btn-xs glyphicon glyphicon-pencil" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Edit this pattern."></button>
+				</h3>
+		  	</div>
+		  	<div class="panel-body">
 		    	<p>
 		    		<strong>Type:</strong> {{:type}}<br />
-		    		<strong>Pattern:</strong> {{:pattern}}
+		    		<strong>Pattern:</strong> {{:pattern}}<br />
+					<strong>Score:</strong> <span class="sc-{{:score}}">{{:score}}</span>
 		    	</p>
-			</div>
+		  	</div>
 		</div>
 	</script>
 

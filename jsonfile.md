@@ -38,6 +38,7 @@ introduction to the format.
 	            "name": "",
 	            "type": "",
 	            "pattern": ""
+	            "score": ""
 	        }
 	    ],
 	    "plugins": {
@@ -73,4 +74,5 @@ The root is an object with these possible members:
      * `name`: Name of the pattern
      * `type`: `simple` or `regex`.
      * `pattern`: The actual search pattern.
+     * `score`: `good`, `neutral`, or `bad`, score of a match.
  * `plugins`: Data related to plug ins.

@@ -32,7 +32,6 @@ class StatusThread(threading.Thread):
         """
         while True:
             try:
-
                 action = QUEUE.get()
 
                 if not isinstance(action[0], six.string_types):

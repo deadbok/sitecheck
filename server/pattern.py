@@ -5,6 +5,7 @@ Patterns for searching index.html diff's
 :copyright: (c) 2016 by Martin Grønholdt.
 :license: MIT, see LICENSE for more details.
 '''
+import re
 import json
 from server.match import Match
 
@@ -13,13 +14,20 @@ class Pattern(object):
     """
     Pattern used for searching an index.html for matches.
     """
-    def __init__(self, name='', ppattern='', ptype='simple', pattern=None):
+    def __init__(self, name='', ppattern='', ptype='simple', score='neutral',
+                 pattern=None):
         if pattern is None:
             self.name = name
             self.type = ptype
             self.pattern = ppattern
+            self.score = score
         else:
-            self.__dict__ = pattern
+            self.name = ""
+            self.type = "simple"
+            self.pattern = ""
+            self.score = "neutral"
+            for key, value in pattern.items():
+                self.__dict__[key] = value
 
     def get_dict(self):
         """
@@ -42,12 +50,17 @@ class Pattern(object):
             pos = str.lower(line).find(self.pattern)
             if pos != -1:
                 matches.add_match(line[:pos], 'neutral')
-                matches.add_match(line[pos:pos + len(self.pattern)], 'good')
+                matches.add_match(line[pos:pos + len(self.pattern)],
+                                  self.score)
                 # Process the rest.
                 matches.add_matches(self.match(line[pos + len(self.pattern):],
                                                add_all=True))
             elif add_all:
                 matches.add_match(line, 'neutral')
+        elif self.type == 'regex':
+            re_matches = re.match(self.pattern, line, re.M)
+            for re_match in re_matches:
+                matches.add_match(re_match, self.score)
 
         return matches
 

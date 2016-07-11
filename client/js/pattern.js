@@ -85,6 +85,7 @@ function renderPattern(pattern)
 		$('#editpatternname').val(name);
 		$('#editpatterntype' + patterns[name].type).prop('checked', true);
 		$('#editpattern').val(patterns[name].pattern);
+		$('#editpatterntscore' + patterns[name].score ).prop('checked', true);
 		$('#editPatternModal').modal('show');
 	});
 }
