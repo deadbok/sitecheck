@@ -17,16 +17,10 @@ def get_simple_cmd_output(cmd):
     """
     Execute an external command and get its output.
     """
-    try:
-        # Split the command and arguments
-        args = shlex.split(cmd)
-        # Return everything from stdout
-        ret = Popen(args, stdout=PIPE)
-        # Convert to string
-        ret_out = ret.communicate()[0].decode(ENCODING)
-        return(ret.returncode, ret_out)
-    except Exception as exception:
-        log.err("Exception: " + str(exception))
-        
-    return(1, str(exception))
-
+    # Split the command and arguments
+    args = shlex.split(cmd)
+    # Return everything from stdout
+    ret = Popen(args, stdout=PIPE)
+    # Convert to string
+    ret_out = ret.communicate()[0].decode(ENCODING)
+    return(ret.returncode, ret_out)
