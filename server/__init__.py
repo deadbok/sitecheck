@@ -33,13 +33,17 @@ class StatusThread(threading.Thread):
         while True:
             action = QUEUE.get()
 
+            if not isinstance(action[0], six.string_types):
+                name = action[0]['name']
+            else:
+                name = action[0]
+
+            log.msg('In thread "' + self.name +
+            	    '" working on host "' + name + '"')            
+
             if action[1] is not None:
                 action[1](action[0])
             if action[2] is not None:
-                if not isinstance(action[0], six.string_types):
-                    name = action[0]['name']
-                else:
-                    name = action[0]
                 action[2](name, action[3], action[4])
 
             QUEUE.task_done()
