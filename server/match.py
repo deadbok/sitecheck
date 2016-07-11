@@ -36,6 +36,6 @@ class Match(object):
         Get a dictionary representation of this match object.
         """
         ret = dict()
-        ret['pattern'] = self.pattern.value
+        ret['pattern'] = self.pattern.name
         ret['matches'] = self.matches
         return ret

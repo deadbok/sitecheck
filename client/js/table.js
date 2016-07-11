@@ -98,7 +98,7 @@ function select_sort()
 		{
 			hosts[host].rendered = false;
 			//render(hosts[host]);
-			setTimeout(render.bind(null, hosts[host]), 0);
+			setTimeout(renderHost.bind(null, hosts[host]), 0);
 		}
 	}
 }
@@ -129,14 +129,14 @@ function addHost(host)
 	//Generate CSS safe id.
 	host.id = host.name.replace('.', '_').replace('-', '_');
 	//Generate IP sort key.
-	if ((host.ip == 'Unknown') || (host.ip === undefined) || (host.ip === null))
+	if ((host.ipaddr == 'Unknown') || (host.ipaddr === undefined) || (host.ipaddr === null))
 	{
-		host.ip = 'Unknown';
+		host.ipaddr = 'Unknown';
 		host.ip_value = 0;
 	}
 	else
 	{
-		var ip_split = host.ip.split('.');
+		var ip_split = host.ipaddr.split('.');
 		host.ip_value = ip_split[0]*0x1000000 + ip_split[1]*0x10000 + ip_split[2]*0x100 + ip_split[3]*1;
 	}
 	//Generate time sort key.
@@ -195,7 +195,7 @@ function removeHost(host)
 }
 
 //Insert a host entry in the table, sorting them on the go.
-function render(host)
+function renderHost(host)
 {
 	var host_html = "";
 	//Remove the previous entry if there is one.

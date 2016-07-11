@@ -5,6 +5,7 @@ Package for the server part of Site Status.
 :copyright: (c) 2016 by Martin Grønholdt.
 :license: MIT, see LICENSE for more details.
 '''
+import six
 import threading
 from twisted.python import log
 from server.protocol import QUEUE
@@ -32,7 +33,13 @@ class StatusThread(threading.Thread):
         while True:
             action = QUEUE.get()
 
-            action[1](action[0])
-            action[2]([action[0]])
+            if action[1] is not None:
+                action[1](action[0])
+            if action[2] is not None:
+                if not isinstance(action[0], six.string_types):
+                    name = action[0]['name']
+                else:
+                    name = action[0]
+                action[2](name, action[3], action[4])
 
             QUEUE.task_done()

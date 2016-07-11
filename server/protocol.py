@@ -23,120 +23,126 @@ class SiteStatusProtocol(WebSocketServerProtocol):
     def __init__(self, factory):
         self.factory = factory
 
-    def _init_response(self):
+    def get_info(self, hosts):
         """
-        Create a response dictionary with standard fields populated.
+        Get server info.
         """
-        response = dict()
-        response['version'] = self.factory.state.server['version']
-        response['total_hosts'] = len(self.factory.state.hosts.hosts)
-        response['hosts'] = list()
-        return response
+        # pylint: disable=unused-argument
+        log.msg('Get server info.')
+        QUEUE.put(('', None, self.factory.state.send_info,
+                   self.factory.state, self))
 
-    def send_hosts(self, hosts):
-        """
-        Send the complete data set for a list of hosts.
-        """
-        response = self._init_response()
-        for host in hosts.values():
-            response['hosts'].append(host.get_dict())
-            # Split in packages of 10
-            if len(response['hosts']) == 10:
-                response['length'] = len(response['hosts'])
-                self.sendMessage(json.dumps(response).encode('utf-8'), False)
-                response['hosts'] = list()
-        # Send the rest
-        if (len(response['hosts']) < 10) and (len(response['hosts']) > 0):
-            response['length'] = len(response['hosts'])
-            self.sendMessage(json.dumps(response).encode('utf-8'), False)
-        elif len(response['hosts']) == 0:
-            response['length'] = 0
-            self.sendMessage(json.dumps(response).encode('utf-8'), False)
-
-    def send_hosts_by_name(self, hosts):
-        """
-        Send the complete data set for a list of host names.
-        """
-        response = self._init_response()
-        for host in hosts:
-            server_hosts = self.factory.state.hosts.hosts
-            if host in server_hosts.keys():
-                response['hosts'].append(server_hosts[host].get_dict())
-                # Split in packages of 10
-                if len(response) == 10:
-                    response['length'] = len(response['hosts'])
-                    self.sendMessage(json.dumps(response).encode('utf-8'),
-                                     False)
-                    response['hosts'] = list()
-        # Send the rest
-        if (len(response) < 10) and (len(response) > 0):
-            response['length'] = len(response['hosts'])
-            self.sendMessage(json.dumps(response).encode('utf-8'), False)
-        elif len(response['hosts']) == 0:
-            response['length'] = 0
-            self.sendMessage(json.dumps(response).encode('utf-8'), False)
-
-    def send_removed_hosts_by_name(self, hosts):
-        """
-        Send the host names for a list of removed host names.
-        """
-        response = self._init_response()
-        response['length'] = -len(hosts)
-        response['hosts'] = hosts
-        self.sendMessage(json.dumps(response).encode('utf-8'), False)
-
-    def get(self, hosts):
+    def get_hosts(self, hosts):
         """
         Get data for a list of host names. `*` for all.
         """
         if hosts[0] == '*':
-            self.send_hosts(self.factory.state.hosts.hosts)
+            for host in self.factory.state.hosts.hosts.keys():
+                log.msg('Get host: ' + host)
+                QUEUE.put((host, None,
+                           self.factory.state.hosts.send,
+                           self.factory.state, self))
+            if len(self.factory.state.hosts.hosts) == 0:
+                self.factory.state.send_empty('host', self.factory.state,
+                                              self)
         else:
-            self.send_hosts_by_name(hosts)
+            for host in hosts:
+                log.msg('Get host: ' + host)
+                QUEUE.put((host, None,
+                           self.factory.state.hosts.send,
+                           self.factory.state, self))
 
-    def diff(self, hosts):
+    def diff_hosts(self, hosts):
         """
         Run a diff on current and last index on a list of hosts.
         """
         for host in hosts:
-            log.msg('Host: ' + host)
+            log.msg('Diff host: ' + host)
             QUEUE.put((host, self.factory.state.hosts.diff,
-                       self.send_hosts_by_name))
+                       self.factory.state.hosts.send,
+                       self.factory.state, self))
 
-    def ping(self, hosts):
+    def ping_hosts(self, hosts):
         """
         Ping a list of hosts.
         """
         for host in hosts:
-            log.msg('Host: ' + host)
+            log.msg('Ping host: ' + host)
             QUEUE.put((host, self.factory.state.hosts.ping,
-                       self.send_hosts_by_name))
+                       self.factory.state.hosts.send,
+                       self.factory.state, self))
 
-    def add(self, hosts):
+    def add_hosts(self, hosts):
         """
         Add a list of hosts.
         """
         log.msg('Adding: ' + str(hosts))
         for host in hosts:
             if host != '':
-                QUEUE.put((host, self.factory.state.hosts.add_host,
-                           self.send_hosts_by_name))
+                QUEUE.put((host, self.factory.state.hosts.add,
+                           self.factory.state.hosts.send,
+                           self.factory.state, self))
 
-    def remove(self, hosts):
+    def remove_hosts(self, hosts):
         """
         Remove a list of hosts.
         """
         log.msg('Removing: ' + str(hosts))
         for host in hosts:
             if host != '':
-                QUEUE.put((host, self.factory.state.hosts.remove_host,
-                           self.send_removed_hosts_by_name))
+                QUEUE.put((host, self.factory.state.hosts.remove,
+                           self.factory.state.hosts.send_removed,
+                           self.factory.state, self))
 
-    message_handlers = {'get': {'host': get, 'pattern': None},
-                        'diff': {'host': diff, 'pattern': None},
-                        'ping': {'host': ping, 'pattern': None},
-                        'add': {'host': add, 'pattern': None},
-                        'remove': {'host': remove, 'pattern': None}}
+    def get_patterns(self, patterns):
+        """
+        Get data for a list of pattern names. `*` for all.
+        """
+        if patterns[0] == '*':
+            for pattern in self.factory.state.patterns.patterns.keys():
+                log.msg('Get pattern: ' + pattern)
+                QUEUE.put((pattern, None,
+                           self.factory.state.patterns.send,
+                           self.factory.state, self))
+            if len(self.factory.state.patterns.patterns) == 0:
+                self.factory.state.send_empty('pattern', self.factory.state,
+                                              self)
+        else:
+            for pattern in patterns:
+                log.msg('Get host: ' + pattern)
+                QUEUE.put((pattern, None,
+                           self.factory.state.patterns.send,
+                           self.factory.state, self))
+
+    def add_patterns(self, patterns):
+        """
+        Add a list of patterns.
+        """
+        log.msg('Adding: ' + str(patterns))
+        for pattern in patterns:
+            if pattern != '':
+                QUEUE.put((pattern, self.factory.state.patterns.add,
+                           self.factory.state.patterns.send,
+                           self.factory.state, self))
+
+    def remove_patterns(self, patterns):
+        """
+        Remove a list of patterns.
+        """
+        log.msg('Removing: ' + str(patterns))
+        for pattern in patterns:
+            if pattern != '':
+                QUEUE.put((pattern, self.factory.state.patterns.remove,
+                           self.factory.state.patterns.send_removed,
+                           self.factory.state, self))
+
+    message_handlers = {'info': {'host': get_info, 'pattern': get_info},
+                        'get': {'host': get_hosts, 'pattern': get_patterns},
+                        'diff': {'host': diff_hosts, 'pattern': None},
+                        'ping': {'host': ping_hosts, 'pattern': None},
+                        'add': {'host': add_hosts, 'pattern': add_patterns},
+                        'remove': {'host': remove_hosts,
+                                   'pattern': remove_patterns}}
 
     def onMessage(self, payload, isBinary):
         """
@@ -149,6 +155,8 @@ class SiteStatusProtocol(WebSocketServerProtocol):
         log.msg(payload.decode('utf8'))
         msg = json.loads(payload.decode('utf8'))
         log.msg('Action: ' + msg['action'])
+        log.msg('Type: ' + msg['type'])
+        log.msg('Parameters: ' + str(msg['param']))
         if msg['action'] in self.message_handlers.keys():
             if self.message_handlers[msg['action']][msg['type']] is not None:
                 self.message_handlers[msg['action']][msg['type']](self,
@@ -162,23 +170,23 @@ class SiteStatusProtocol(WebSocketServerProtocol):
                 log.err(self.factory.state.config['msg'])
         else:
             self.factory.state.config['msg'] = ('Unknown action "' +
-                                                msg['action'] +
-                                                '" on type "' +
-                                                msg['type'])
+                                                msg['action'] + '"')
             self.factory.state.config['msg_state'] = 'bad'
             log.err(self.factory.state.config['msg'])
 
         # Process the queue.
         QUEUE.join()
 
-        self.factory.state.json_export()
+        # Save state if changed.
+        if msg['action'] != 'info':
+            self.factory.state.json_export()
 
 
 class SiteStatusFactory(WebSocketServerFactory):
     """
-    Factory to a SiteStatus servers and make a JSON files data available.
+    Factory to create SiteStatus server instances and make a JSON files data
+    available.
     """
-
     protocol = SiteStatusProtocol
 
     def __init__(self, wsuri, state):

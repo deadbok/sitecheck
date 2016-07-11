@@ -10,9 +10,10 @@ import json
 from twisted.python import log
 from server.version import __version__
 from server.hosts import Hosts
+from server.patterns import Patterns
 
 
-class ServerState(object):
+class ServerState():
     """
     Load/save data and configuration from a JSON file.
     """
@@ -27,8 +28,8 @@ class ServerState(object):
         self.server['version'] = __version__
         self.server['msg'] = ''
         self.server['msg_state'] = 'neutral'
-        self.hosts = Hosts()
-        self.patterns = list()
+        self.patterns = Patterns()
+        self.hosts = Hosts(patterns=self.patterns)
         self.plugins = dict()
 
     def json_import(self, filename=None):
@@ -45,9 +46,9 @@ class ServerState(object):
             if json_data != '':
                 data = json.loads(json_data)
 
-                self.server = data['server']
-                self.hosts = Hosts(data['hosts'])
-                self.patterns = data['patterns']
+                # self.server = data['server']
+                self.patterns = Patterns(data['patterns'])
+                self.hosts = Hosts(data['hosts'], self.patterns)
                 self.plugins = data['plugins']
             else:
                 log.err('Empty JSON data file.')
@@ -67,7 +68,7 @@ class ServerState(object):
             data = dict()
             data['server'] = self.server
             data['hosts'] = self.hosts.get_dict_list()
-            data['patterns'] = self.patterns
+            data['patterns'] = self.patterns.get_dict_list()
             data['plugins'] = self.plugins
 
             json_file.write(json.dumps(data,
@@ -77,3 +78,27 @@ class ServerState(object):
                                        sort_keys=True))
 
         json_file.close()
+
+    def send_info(self, dummy, state, protocol):
+        """
+        Send server info message.
+        """
+        response = dict()
+        response['version'] = state.server['version']
+        response['total'] = len(self.hosts.hosts)
+        response['type'] = 'host'
+        response['length'] = 0
+        response['data'] = []
+        protocol.sendMessage(json.dumps(response).encode('utf-8'), False)
+
+    def send_empty(self, stype, state, protocol):
+        """
+        Send empty message..
+        """
+        response = dict()
+        response['version'] = state.server['version']
+        response['total'] = len(self.__dict__[stype + 's'].__dict__[stype + 's'])
+        response['type'] = stype
+        response['length'] = 0
+        response['data'] = []
+        protocol.sendMessage(json.dumps(response).encode('utf-8'), False)

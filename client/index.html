@@ -247,7 +247,7 @@
 			<tr id="{{:id}}_row" name="{{:name}}" style="width: 100%">
 				<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
 				<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
-				<td id="{{:id}}_ip">{{:ip}}</td>
+				<td id="{{:id}}_ip">{{:ipaddr}}</td>
 				<td id="{{:id}}_state" class="sc-{{:state}}">{{:state_msg}}</td>
 				<td id="{{:id}}_replyHost">{{:replyHost}}</td>
 				<td id="{{:id}}_time">{{:time}}</td>
@@ -289,18 +289,18 @@
 			protocol.get_all_hosts();
 		}
 		
-		function protocol_onaddhost(host)
+		function protocol_onadd(host)
 		{
 			addHost(host);
-			render(host);
+			renderHost(host);
 		}
 		
-		function protocol_onremovehost(host)
+		function protocol_onremove(host)
 		{
 			removeHost(hosts[host]);
 		}
 		
-		function protocol_onlasthost()
+		function protocol_onlast()
 		{
 			//Make sure the spinner is hidden.
 			$('#loader').hide();
@@ -317,14 +317,13 @@
 		$(document).ready(function()
 		{
 			//Open a connection to the server.
-			protocol.open(
-					{
-						onopen: protocol_onopen,
-						onaddhost: protocol_onaddhost,
-						onremovehost: protocol_onremovehost,
-						onlasthost: protocol_onlasthost,
-						onclose: protocol_onclose
-					});
+			protocol.open({
+				"onopen": {"host": protocol_onopen, "pattern": undefined},
+			   	"onadd": {"host": protocol_onadd, "pattern": undefined},
+                "onremove": {"host": protocol_onremove, "pattern": undefined},
+                "onlast": {"host": protocol_onlast, "pattern": undefined},
+                "onclose": {"host": protocol_onclose, "pattern": undefined}
+            });
 			
 			//Bind the colapse all funtion.
 			$('#expand_all').click(expand_all);

@@ -101,10 +101,10 @@
 	{
 	    $('#con_state').toggleClass('sc-offline sc-online');
 	    $('#con_state').toggleClass('fa-unlink fa-link');
-	    protocol.get_hosts( [] );
+	    protocol.get_info();
 	};
 	
-	function protocol_onlasthost()
+	function protocol_onlast()
 	{
 		$('#server_version').html(protocol.server_version);
 	};
@@ -118,12 +118,13 @@
 	};
 	
 	//Open a connection to the server.
-	protocol.open(
-			{
-				onopen: protocol_onopen,
-				onlasthost: protocol_onlasthost,
-				onclose: protocol_onclose
-			});
+			protocol.open({
+				"onopen": {"host": protocol_onopen, "pattern": undefined},
+			   	"onadd": {"host": undefined, "pattern": undefined},
+                "onremove": {"host": undefined, "pattern": undefined},
+                "onlast": {"host": protocol_onlast, "pattern": undefined},
+                "onclose": {"host": protocol_onclose, "pattern": undefined}
+            });
 	
 	$(document).ready(function()
 	{

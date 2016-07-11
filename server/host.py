@@ -5,8 +5,9 @@ Created on 11/06/2016
 :copyright: (c) 2016 by Martin Grønholdt.
 :license: MIT, see LICENSE for more details.
 '''
-import os.path
 import re
+import json
+import os.path
 from datetime import datetime
 from twisted.python import log
 
@@ -147,7 +148,7 @@ class Host:
         """
         Find matches in the index diff.
         """
-        log.msg('Scanning diff for patterns.')
+        log.msg('Scanning ' + self.name + ' diff for patterns.')
         self.msgs = []
         for pattern in patterns:
             for line in self.diff.split('\n'):
@@ -158,7 +159,19 @@ class Host:
                         # Modify the global state of the host if things are
                         # getting worse.
                         if (((self.state == 'good') or
-                            (self.state == 'neutral')) and
-                            ((match.score == 'neutral') or
-                             (match.score == 'bad'))):
-                            self.state = match.score
+                             (self.state == 'neutral')) and
+                            ((match['score'] == 'neutral') or
+                             (match['score'] == 'bad'))):
+                            self.state = match['score']
+
+    def send(self, state, protocol):
+        """
+        Send the complete data set for this host.
+        """
+        response = dict()
+        response['version'] = state.server['version']
+        response['total'] = len(state.hosts.hosts)
+        response['type'] = 'host'
+        response['length'] = 1
+        response['data'] = [self.get_dict()]
+        protocol.sendMessage(json.dumps(response).encode('utf-8'), False)

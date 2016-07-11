@@ -44,7 +44,7 @@
 					<li><a href="about.html">About</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li><span id="n_hosts" class="badge">0</span> <span
+					<li><span
 						id="con_state"
 						class="pointer sc-connected sc-offline fa fa-unlink"
 						aria-hidden="true"> </span></li>
@@ -55,6 +55,75 @@
 		<!-- /.container-fluid -->
 	</nav>
 	<div class="container-fluid sc-content">
+		<!-- Add pattern modal -->
+		<div id="addPatternModal" class="modal fade" role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-sm">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Input pattern details...</h4>
+					</div>
+					<form enctype="multipart/form-data" method="post"
+						id="new_pattern_form">
+						<div class="modal-body">
+							<div class="form-group">
+    							<label for="newpatternname">Pattern name:</label>
+								<input name="newpatternname" type="text" id="newpatternname" class="form-control" placeholder="Name" />
+							</div>
+							<div class="form-group">
+								<label class="radio-inline">
+  									<input type="radio" name="newpatterntype" id="newpatterntypesimple" value="simple"> Simple
+								</label>
+								<label class="radio-inline">
+  									<input type="radio" name="newpatterntype" id="newpatterntyperegex" value="regex"> Regex
+								</label>
+							</div>
+							<div class="form-group">
+    							<label for="newpattern">Pattern:</label>
+								<textarea rows="3" name="newpattern" id="newpattern" class="form-control" placeholder="Pattern"></textarea>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" id="addPatternOK"
+								data-dismiss="modal">OK</button>
+							<button type="button" class="btn btn-default"
+								data-dismiss="modal">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Remove pattern modal -->
+		<div id="removePatternModal" class="modal fade" role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-sm">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Remove the following pattern?</h4>
+					</div>
+					<div id="removePatternView" class="modal-body">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" id="removePatternYes"
+							data-dismiss="modal">Yes</button>
+						<button type="button" class="btn btn-default"
+							data-dismiss="modal">No</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+		  	<div class="panel-heading">
+		    	<h3 class="panel-title">Pattern matcher&nbsp;
+	    			<button type="button" id="addPatternButton" class="btn btn-default glyphicon glyphicon-plus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Add a pattern."></button>
+				</h3>
+		  	</div>
+		  	<div class="panel-body" id="pattern_body">
+		  	</div>	  	
+		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading">
 		    	<h3 class="panel-title">Virus Total</h3>
@@ -68,14 +137,6 @@
 				</form>
 		  	</div>
 		</div>
-		<div class="panel panel-default">
-		  	<div class="panel-heading">
-		    	<h3 class="panel-title">Pattern matcher</h3>
-		  	</div>
-		  	<div class="panel-body">
-		    	Panel content
-		  	</div>
-		</div>
 	</div>
 
 	<footer class="navbar-inverse">
@@ -87,15 +148,82 @@
 			href="LICENSE">Read license.</a></small>
 	</footer>
 	<script src="js/jquery.js"></script>
+	<script src="js/jsrender.js"></script>
 	<script src="js/bootstrap.js"></script>
 	<script src="js/protocol.js"></script>
+	<script src="js/pattern.js"></script>
+	<script src="js/actions.js"></script>
 	<script src="js/client.js"></script>
+	
+	<!-- jsRender template of a pattern entry. -->
+	<script id="patternTmpl" type="text/x-jsrender">
+		<div id="{{:id}}" name="{{:name}}">
+			<label>{{:name}}</label>
+			<div class="well">
+				<button type="button" id="remove_{{:id}}_button" class="pull-right btn btn-default glyphicon glyphicon-minus" data-container="body" data-delay='{ "show": 500, "hide": 100 }' data-toggle="tooltip" title="Remove this pattern."></button>
+		    	<p>
+		    		<strong>Type:</strong> {{:type}}<br />
+		    		<strong>Pattern:</strong> {{:pattern}}
+		    	</p>
+			</div>
+		</div>
+	</script>
 
 	<script type="text/javascript">
+		var pattern_tmpl = $.templates("#patternTmpl");
+		var patterns = {};
+		var protocol = new Protocol();
+		
+		//Change the UI status display when connected.
+		function protocol_onopen()
+		{
+		    $('#con_state').toggleClass('sc-offline sc-online');
+		    $('#con_state').toggleClass('fa-unlink fa-link');
+			patterns = {};
+			protocol.get_all_patterns();
+		}
+		
+		function protocol_onadd(pattern)
+		{
+			addPattern(pattern);
+			renderPattern(pattern);
+		}
+		
+		function protocol_onremove(pattern)
+		{
+			removePattern(patterns[pattern]);
+		}
+		
+		function protocol_onlast()
+		{
+		}
+		
+		//Change the UI status display when disconnected.
+		function protocol_onclose()
+		{
+		    $('#con_state').toggleClass('sc-offline sc-online');
+		    $('#con_state').toggleClass('fa-unlink fa-link');
+		}
+		
 		$(document).ready(function()
 		{
+			//Open a connection to the server.
+			protocol.open({
+				"onopen": {"pattern": protocol_onopen, "host": undefined},
+			   	"onadd": {"pattern": protocol_onadd, "host": undefined},
+                "onremove": {"pattern": protocol_onremove, "host": undefined},
+                "onlast": {"pattern": protocol_onlast, "host": undefined},
+                "onclose": {"pattern": protocol_onclose, "host": undefined}
+            });
+			
+			//Connect/disconnect from server.
+			$('#con_state').click(toggle_connection);
+			//Initialise tooltips.
+    		$('[data-toggle="tooltip"]').tooltip();
+			//Update version.
     		$('#version').html(VERSION);
 		});
+
 	</script>
 </body>
 </html>

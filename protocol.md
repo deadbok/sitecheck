@@ -45,50 +45,39 @@ Request are send from the client, the server responds  when a ready.
 
 ## Response from the server ##
 
-The server sends hosts in blocks of 10. Only the last message will contain
-less than 10 hosts. If the total number of hosts is divisible by 10, a message
-with 0 hosts will be send as the last.
+The server sends data in blocks of 10. Only the last message will contain
+less than 10 data entries. If the total number of data entries is divisible by
+10, a message with 0 entries will be send as the last.
 
 	{
-		"version" : "0.0.0",
-		"total_hosts": 0,
+		"version" : "x.y.z",
+		"total": 0,
+		"type": "",
 		"length" : >-1,
-		"hosts" : [ { host_data } ]
+		"data" : [ { data } ]
 	}
   
-`length` is the number of hosts in the response. `hosts` is the list of host
-data.
+`length` is the number of hosts in the response. `data` is the list of
+data. `type` is the type of object to work on, either `pattern` or `host`.
 
-*If `length` is negative, the hosts has been removed*. 
+*If `length` is negative, the data has been removed*. 
 
 	{
-		"version" : "0.0.0",
-		"total_hosts": 0,
+		"version" : "x.y.z",
+		"total": 0,
+		"type": "",
 		"length" : < 0,
-		"hosts" : [ host_names ]
+		"data" : [ data_ids ]
 	}
 	
-`hosts` is the list of host names that has been removed.
+`data_ids` is a list of data id's that has been removed.
 
-### Host data ###
+### Special info response ###
 
 	{
-        "diff": "",
-        "ip": "",
-        "msgs": [
-            {
-                "matches": [
-                    {
-                        "msg": "",
-                        "score": ""
-                    }
-                ],
-                "pattern": ""
-            }
-        ],
-        "name": "",
-        "replyHost": "",
-        "state": "",
-        "state_msg": "", 
-        "time": 0
-    }
+		"version" : "x.y.z",
+		"total": 0,
+		"type": "host",
+		"length" : 0,
+		"data" : [ ]
+	}

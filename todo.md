@@ -19,3 +19,4 @@
  * Save previous JSON data, to detect IP changes and such.
  * Grep style detection of unwanted patterns in index.html
  * Virus Total status
+ * Stand alone HTTP and WebSockets server.

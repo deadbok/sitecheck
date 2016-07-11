@@ -6,38 +6,42 @@ introduction to the format.
 ## JSON ###
 
 	{
-	    "server":{
-	        "version":"x.y.x"
-	        "msg":"",
-			 "msg_state":""
+	    "server": {
+	        "version": "x.y.x",
+	        "msg": "",
+	        "msg_state": ""
 	    },
-	    "hosts":[
+	    "hosts": [
 	        {
-	            "diff":"",
-	            "ip": "www.xxx.yyy.zzz",
-	            "msgs":[
+	            "diff": "",
+	            "ipaddr": "www.xxx.yyy.zzz",
+	            "msgs": [
 	                {
-	                    "matches":[
+	                    "matches": [
 	                        {
-	                            "string":"",
-	                            "score":""
+	                            "string": "",
+	                            "score": ""
 	                        }
 	                    ],
-	                    "pattern":""
+	                    "pattern": ""
 	                }
 	            ],
-	            "name":"",
-	            "replyHost":"",
-	            "state":"",
-	            "state_msg":"",
-	            "time":0
+	            "name": "",
+	            "replyHost": "",
+	            "state": "",
+	            "state_msg": "",
+	            "time": 0
 	        }
 	    ],
-	    "patterns":[
-	        ""
+	    "patterns": [
+	        {
+	            "name": "",
+	            "type": "",
+	            "pattern": ""
+	        }
 	    ],
-	    "plugins":{
-	        "active":[
+	    "plugins": {
+	        "active": [
 	            ""
 	        ]
 	    }
@@ -54,7 +58,7 @@ The root is an object with these possible members:
      * `msg_state`: `good`, `neutral`, or `bad`.
  * `hosts`: List of all hosts that Site Status is currently working with.
      * `diff`: Data from a unified diff of the last and current index page.
-     * `ip`: IP address of the host.
+     * `ipaddr`: IP address of the host.
      * `msgs`: Messages from the active plug-ins and the pattern matcher.
          * `matches`: Pattern matches in diff.
              * `string`: Part of the line where a match is found.
@@ -66,4 +70,7 @@ The root is an object with these possible members:
      * `state_msg`: Host state description.
      * `time`: Last time a request to the host was made.
  * `patterns`: Data related to the pattern matching "engine".
+     * `name`: Name of the pattern
+     * `type`: `simple` or `regex`.
+     * `pattern`: The actual search pattern.
  * `plugins`: Data related to plug ins.

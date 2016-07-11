@@ -61,7 +61,7 @@ $('#addHostButton').click(
 		});
 
 $('#addhostok').click(
-		function(e) {
+		function() {
 			protocol.add_hosts([ $('#newhost').val() ]);
 		});
 
@@ -80,4 +80,23 @@ $('#removeHostYes').click(
 				return this.value;
 			}).get();
 			protocol.remove_hosts(host_names);
+		});
+
+$('#addPatternButton').click(
+		function() {
+			$('#addPatternModal').modal('show');
+		});
+
+$('#addPatternOK').click(
+		function() {
+			var pattern = {};
+			pattern.name = $('#newpatternname').val();
+		    pattern.type = $('[name="newpatterntype"]:checked').val();
+		    pattern.pattern =$('#newpattern').val();
+			protocol.add_pattern(pattern);
+		});
+
+$('#removePatternYes').click(
+		function() {
+			protocol.remove_patterns([$(this).attr('name')]);
 		});
