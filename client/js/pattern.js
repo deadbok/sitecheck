@@ -74,4 +74,17 @@ function renderPattern(pattern)
 		$('#removePatternView').html(name);
 		$('#removePatternModal').modal('show');
 	});
+	
+	//Bind the edit function.
+	$('#edit_' + pattern.id + '_button').click(function()
+	{
+		var id = $(this).attr('id').replace('edit_', '').replace('_button', '');
+		var name = $('#' + id).attr('name');
+		
+		$('#editPatternOK').attr('name', name)
+		$('#editpatternname').val(name);
+		$('#editpatterntype' + patterns[name].type).prop('checked', true);
+		$('#editpattern').val(patterns[name].pattern);
+		$('#editPatternModal').modal('show');
+	});
 }
