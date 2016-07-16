@@ -15,6 +15,7 @@
 			  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 			<![endif]-->
 <link rel="stylesheet" href="css/font-awesome.min.css">
+<link rel="stylesheet" href="css/default.css">
 <link rel="stylesheet" type="text/css" href="css/custom.css">
 <title>Site check - Home</title>
 </head>
@@ -194,34 +195,32 @@
 			<div id="loader" class="loader"></div>
 		</div>
 		
-		<form>
-			<div class="table-responsive">
-				<table id="host_table" style="width: 100%" class="table table-hover">
-					<thead>
-						<tr>
-							<th><input type="checkbox" id="allhost"></th>
-							<th class="pointer">
-								<span id="name_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Host</span>
-							</th>
-							<th class="pointer">
-								<span id="ip_value_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;IP</span>
-							</th>
-							<th class="pointer">
-								<span id="state_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;State</span>
-							</th>
-							<th class="pointer">
-								<span id="replyHost_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Reply from</span>
-							</th>
-							<th class="pointer">
-								<span id="time_value_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Time</span>
-							</th>
-							<th id="expand_header" class="pointer"><span id="expand_all"
-								class="glyphicon glyphicon-collapse-down"></span></th>
-						</tr>
-					</thead>
-				</table>
-			</div>
-		</form>
+		<div class="table-responsive">
+			<table id="host_table" style="width: 100%" class="table table-hover">
+				<thead>
+					<tr>
+						<th><input type="checkbox" id="allhost"></th>
+						<th class="pointer">
+							<span id="name_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Host</span>
+						</th>
+						<th class="pointer">
+							<span id="ip_value_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;IP</span>
+						</th>
+						<th class="pointer">
+							<span id="state_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;State</span>
+						</th>
+						<th class="pointer">
+							<span id="replyHost_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Reply from</span>
+						</th>
+						<th class="pointer">
+							<span id="time_value_header"><span id="arrow" class="sort-inactive glyphicon glyphicon-chevron-down"></span>&nbsp;Time</span>
+						</th>
+						<th id="expand_header" class="pointer"><span id="expand_all"
+							class="glyphicon glyphicon-collapse-down"></span></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
 	</div>
 	<footer class="navbar-inverse">
 		<span class="text-uppercase sc-title">Site status</span> <span
@@ -240,11 +239,12 @@
 	<script src="js/table.js"></script>
 	<script src="js/actions.js"></script>
 	<script src="js/client.js"></script>
+	<script src="js/highlight.pack.js"></script>	
 
 	<!-- jsRender template of a host entry. -->
 	<script id="hostBodyTmpl" type="text/x-jsrender">
 		<tbody id="{{:id}}_body">
-			<tr id="{{:id}}_row" name="{{:name}}" style="width: 100%">
+			<tr id="{{:id}}_row" name="{{:name}}" style="width: 95%">
 				<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
 				<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
 				<td id="{{:id}}_ip">{{:ipaddr}}</td>
@@ -253,9 +253,9 @@
 				<td id="{{:id}}_time">{{:time}}</td>
 				<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
 			</tr>
-			<tr id="{{:id}}_detail" class="collapse" style="width: 100%">
+			<tr id="{{:id}}_detail" class="collapse code">
 				<td colspan="0">
-					<pre id="{{:id}}_diff">{{:diff_escape}}</pre>
+					<pre id="{{:id}}_diff"><code id="{{:id}}_diff_code">{{:diff_escape}}</code></pre>
 					<ul>
 						{{for msgs}}
 							<li>

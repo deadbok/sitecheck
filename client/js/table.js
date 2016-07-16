@@ -7,7 +7,7 @@
 //Select all checkboxes functionality.
 $('#allhost').change(function()
 {
-    var checkboxes = $(this).closest('form').find(':checkbox');
+    var checkboxes = $('#host');
     if ($(this).is(':checked'))
     {
 	checkboxes.prop('checked', true);
@@ -307,11 +307,16 @@ function renderHost(host)
 	host.rendered = true;
 	//Host has no new data.
 	host.updated = false;
-	//Bind the colapse funtion.
+	//Bind the collapse function.
 	$('#' + host.id + '_expand').click(function()
 	{
 		$(this).toggleClass('glyphicon-collapse-up glyphicon-collapse-down');
-		$('#' + $(this).attr('id').replace('_expand', '_detail')).collapse('toggle');
+		
+		var detail = $(this).attr('id').replace('_expand', '_detail');
+		$('#' + detail).collapse('toggle');
+		
+		 
+		hljs.highlightBlock($('#' + detail.replace('_detail', '_diff_code')).get(0));
 	});
 	//Uncheck the all checkbox
 	$('#allhost').prop('checked', false);
