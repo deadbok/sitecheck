@@ -196,7 +196,7 @@
 		</div>
 		
 		<div class="table-responsive">
-			<table id="host_table" style="width: 100%" class="table table-hover">
+			<table id="host_table" class="table table-hover">
 				<thead>
 					<tr>
 						<th><input type="checkbox" id="allhost"></th>
@@ -245,7 +245,7 @@
 	<script id="hostBodyTmpl" type="text/x-jsrender">
 		<tbody id="{{:id}}_body">
 			<tr id="{{:id}}_row" name="{{:name}}" style="width: 95%">
-				<td><input type="checkbox" id="host" name="{{:name}}" value="{{:name}}"></td>
+				<td><input type="checkbox" class="host" name="{{:name}}" value="{{:name}}"></td>
 				<td><a id="{{:id}}_link" href="http://{{:name}}/" target="_new">{{:name}}</a></td>
 				<td id="{{:id}}_ip">{{:ipaddr}}</td>
 				<td id="{{:id}}_state" class="sc-{{:state}}">{{:state_msg}}</td>
@@ -253,9 +253,9 @@
 				<td id="{{:id}}_time">{{:time}}</td>
 				<td><span id="{{:id}}_expand" class="pointer glyphicon glyphicon-collapse-down"></span></td>
 			</tr>
-			<tr id="{{:id}}_detail" class="collapse code">
-				<td colspan="0">
-					<pre id="{{:id}}_diff"><code id="{{:id}}_diff_code">{{:diff_escape}}</code></pre>
+			<tr id="{{:id}}_detail" class="collapse code" style="width: 95%">
+				<td colspan="7">
+					<pre id="{{:id}}_diff"><code id="{{:id}}_diff_code" class="diff">{{:diff_escape}}</code></pre>
 					<ul>
 						{{for msgs}}
 							<li>

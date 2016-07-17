@@ -6,7 +6,7 @@
 
 function req_ping()
 {
-	var host_names = $("#host:checked").map(function() {
+	var host_names = $('[class="host"]').map(function() {
 		return this.value;
 	}).get();
 	protocol.ping(host_names);
@@ -14,7 +14,7 @@ function req_ping()
 
 function req_diff()
 {
-	var host_names = $("#host:checked").map(function() {
+	var host_names = $('[class="host"]').map(function() {
 		return this.value;
 	}).get();
 	protocol.diff(host_names);

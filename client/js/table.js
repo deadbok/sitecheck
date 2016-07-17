@@ -7,16 +7,9 @@
 //Select all checkboxes functionality.
 $('#allhost').change(function()
 {
-    var checkboxes = $('#host');
-    if ($(this).is(':checked'))
-    {
-	checkboxes.prop('checked', true);
-    }
-    else
-    {
-	checkboxes.prop('checked', false);
-    }
+    $('[class="host"]').prop('checked', this.checked);
 });
+
 
 function expand_all()
 {
