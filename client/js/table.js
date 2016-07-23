@@ -219,7 +219,7 @@ function renderHost(host)
 					{
 						return -1;
 					}
-					else if (a[sort_value] == b[sort_value])
+					else if (a[sort_value] === b[sort_value])
 					{
 						return 0;
 					}
@@ -237,7 +237,7 @@ function renderHost(host)
 					{
 						return -1;
 					}
-					else if (a[sort_value] == b[sort_value])
+					else if (a[sort_value] === b[sort_value])
 					{
 						return 0;
 					}
@@ -272,7 +272,7 @@ function renderHost(host)
 				var res = sort_host(hosts[sort_keys[i]], host) * sort_order;
 
 				//If we're at the end, just append
-				if ( (sort_keys.length == ( i + 1)) && ( res < 1) )
+				if ( (sort_keys.length === ( i + 1)) && ( res < 1) )
 				{
 					sort_keys.push(host.name);
 					host_html = host_row_tmpl.render(host);

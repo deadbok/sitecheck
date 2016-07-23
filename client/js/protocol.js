@@ -59,7 +59,7 @@ Protocol.prototype.open = function(callbacks)
     	    parent.server_version = json_data.version;
     	     
     	    var i = 0;
-    	    if (json_data.type == 'host')
+    	    if (json_data.type === 'host')
     	    {
            	    // Run through the host names.
         	    if (json_data.length > -1)
@@ -86,7 +86,7 @@ Protocol.prototype.open = function(callbacks)
         	    }
     	    }
     	    
-    	    if (json_data.type == 'pattern')
+    	    if (json_data.type === 'pattern')
     	    {
            	    // Run through the pattern names.
         	    if (json_data.length > -1)
@@ -116,14 +116,14 @@ Protocol.prototype.open = function(callbacks)
 	        // Last message.
     	    if ((json_data.length < 10) && (json_data.length > -1))
     	    {
-    	    	if (json_data.type == 'host')
+    	    	if (json_data.type === 'host')
     	    	{
         	    	if (jQuery.isFunction(cbs.onlast.host))
             	    {
         	    		cbs.onlast.host();
             	    }
     	    	}
-    	    	if (json_data.type == 'pattern')
+    	    	if (json_data.type === 'pattern')
     	    	{
         	    	if (jQuery.isFunction(cbs.onlast.pattern))
             	    {

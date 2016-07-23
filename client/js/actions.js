@@ -45,7 +45,7 @@ $('#importOK').click(
 	        	for ( var i = 0; i < hosts.length; i++)
 	        	{
 	        		//Strip of comments
-	        		if (hosts[i][0] == '#')
+	        		if (hosts[i][0] === '#')
 	        		{
 	        			hosts.splice(i, 1);
 	        		}
