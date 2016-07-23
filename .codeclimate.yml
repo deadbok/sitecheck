@@ -24,7 +24,7 @@ exclude_paths:
  - "client/js/date*.js"
  - "client/js/highlight*.js"
  - "client/js/jquery*.js"
- - "client/js/jrender*.js"
+ - "client/js/jsrender*.js"
  - "client/js/npm.js"  
  - "client/css/bootstrap*.*"
  - "client/css/default.css"
