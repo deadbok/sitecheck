@@ -6,6 +6,7 @@ Created on 11/06/2016
 :license: MIT, see LICENSE for more details.
 '''
 import json
+from twisted.python import log
 from server.host import Host
 
 
@@ -107,5 +108,6 @@ class Hosts:
         """
         Run a new pattern oń existing diffs.
         """
+        log.msg("Running match scan for new pattern: " + pattern.name)
         for host in self.hosts.keys():
             self.hosts[host].match_scan([pattern])

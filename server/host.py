@@ -5,6 +5,7 @@ Created on 11/06/2016
 :copyright: (c) 2016 by Martin Grønholdt.
 :license: MIT, see LICENSE for more details.
 '''
+import io
 import re
 import json
 import os.path
@@ -99,50 +100,62 @@ class Host:
 
         @todo: Generate sane output when the command fails.
         """
-        # curl command
-        cmd = "curl -s -L " + self.name.strip()
-        # Run
-        res = get_simple_cmd_output(cmd)
-        if res[0] == 0:
-            self.state_msg = 'Index response'
-            self.state = 'good'
-        else:
-            self.state = 'bad'
-            self.state_msg = 'No answer'
-
-        index_file_name = "sites/" + self.name + "-index.html"
-        # Rename the old one if it is there
-        if os.path.isfile(index_file_name):
-            os.rename(index_file_name, index_file_name + ".old")
-
-        # Save new index.html
-        index_file = open(index_file_name, "w")
-        if index_file is not None:
-            index_file.write(res[1])
-            index_file.close()
-        else:
-            log.err("Could not write: " + index_file_name)
-
-        if os.path.isfile(index_file_name + ".old"):
-            log.msg("Diffing: " + index_file_name)
-            # diff command
-            cmd = "diff -u1 " + index_file_name + ".old " + index_file_name
+        res = list()
+        res.append(0)
+        res.append('')
+        try:
+            log.msg('Getting ' + self.name + ' index.')
+            # curl command
+            cmd = "curl -s -L " + self.name.strip()
             # Run
             res = get_simple_cmd_output(cmd)
-            if res[0] > 1:
+            if res[0] == 0:
+                self.state_msg = 'Index response'
+                self.state = 'good'
+            else:
                 self.state = 'bad'
-                self.state_msg = 'Index diff failed'
+                self.state_msg = 'No answer'
 
-            self.diff = res[1]
-            if self.diff != '':
+            index_file_name = "sites/" + self.name + "-index.html"
+            # Rename the old one if it is there
+            if os.path.isfile(index_file_name):
+                os.rename(index_file_name, index_file_name + ".old")
+
+            # Save new index.html
+            index_file = io.open(index_file_name, "w")
+            if index_file is not None:
+                index_file.write(res[1])
+                index_file.close()
+            else:
+                log.err("Could not write: " + index_file_name)
+
+            if os.path.isfile(index_file_name + ".old"):
+                log.msg("Diffing: " + index_file_name)
+                # diff command
+                cmd = "diff -u1 " + index_file_name + ".old " + index_file_name
+                # Run
+                res = get_simple_cmd_output(cmd)
+                if res[0] > 1:
+                    self.state = 'bad'
+                    self.state_msg = 'Index diff failed'
+
+                self.diff = res[1]
+                if self.diff != '':
+                    self.state = 'neutral'
+                    self.state_msg = 'Index changed'
+            else:
+                self.diff = "No old index"
                 self.state = 'neutral'
-                self.state_msg = 'Index changed'
-        else:
-            self.diff = "No old index"
-            self.state = 'neutral'
-            self.state_msg = 'No previous index'
+                self.state_msg = 'No previous index'
 
-        self.time = time_stamp(datetime.utcnow())
+                self.time = time_stamp(datetime.utcnow())
+
+        except UnicodeDecodeError as exception:
+            log.err('Exception when diffing: ' + str(exception))
+            log.err('Command output: ' + res[1])
+            self.diff = "Diff error"
+            self.state = 'bad'
+            self.state_msg = 'Diff error'
 
     def match_scan(self, patterns):
         """

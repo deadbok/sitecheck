@@ -17,10 +17,16 @@ def get_simple_cmd_output(cmd):
     """
     Execute an external command and get its output.
     """
+    log.msg('Calling: ' + cmd)
     # Split the command and arguments
     args = shlex.split(cmd)
     # Return everything from stdout
     ret = Popen(args, stdout=PIPE)
-    # Convert to string
-    ret_out = ret.communicate()[0].decode(ENCODING)
+    try:
+        # Convert to string
+        ret_out = ret.communicate()[0].decode(ENCODING)
+    except UnicodeDecodeError:
+        ret_out = ret.communicate()[0].decode('latin-1')
+        return(ret.returncode, ret_out)
+
     return(ret.returncode, ret_out)

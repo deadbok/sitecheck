@@ -6,8 +6,8 @@ Package for the server part of Site Status.
 :license: MIT, see LICENSE for more details.
 '''
 import sys
-import six
 import threading
+import six
 from twisted.python import log
 from server.protocol import QUEUE
 from server.protocol import SiteStatusProtocol
@@ -31,6 +31,7 @@ class StatusThread(threading.Thread):
         Perform the action, all data and functions are retrieved from the
         queue.
         """
+        name = ''
         while True:
             try:
                 action = QUEUE.get()
@@ -47,10 +48,12 @@ class StatusThread(threading.Thread):
                     action[1](action[0])
                 if action[2] is not None:
                     action[2](name, action[3], action[4])
-
-                QUEUE.task_done()
             except:
                 exc_type, exc_value = sys.exc_info()[:2]
-                log.err('%s exception with message "%s" in %s'
-                        % (exc_type.__name__, exc_value,
-                           threading.current_thread().name))
+                log.err(exc_type.__name__ + ' exception with message "' +
+                        str(exc_value) +
+                        '" in ' + threading.current_thread().name +
+                        ' processing ' + name)
+            finally:
+                QUEUE.task_done()
+                log.msg('Work queue size: ' + str(QUEUE.qsize()))

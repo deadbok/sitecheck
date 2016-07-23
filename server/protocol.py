@@ -5,15 +5,15 @@ Main Site Check WebSockets server routines.
 :copyright: (c) 2016 by Martin Grønholdt.
 :license: MIT, see LICENSE for more details.
 """
-
-
 import json
+import threading
 from queue import Queue
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from autobahn.twisted.websocket import WebSocketServerFactory
 from twisted.python import log
 
-QUEUE = Queue()
+# Limit the work queue to 4096 items before blocking.
+QUEUE = Queue(4096)
 
 
 class SiteStatusProtocol(WebSocketServerProtocol):
@@ -177,6 +177,9 @@ class SiteStatusProtocol(WebSocketServerProtocol):
 
         # Process the queue.
         QUEUE.join()
+
+        for thread in threading.enumerate():
+            log.msg('Active thread: ' + thread.name)
 
         # Save state if changed.
         if msg['action'] != 'info':
