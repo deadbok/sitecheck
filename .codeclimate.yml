@@ -1,0 +1,30 @@
+---
+engines:
+  csslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - python
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  radon:
+    enabled: true
+ratings:
+  paths:
+  - "**.css"
+  - "**.js"
+  - "**.py"
+exclude_paths:
+ - "client/js/bootstrap*.js"
+ - "client/js/date*.js"
+ - "client/js/highlight*.js"
+ - "client/js/jquery*.js"
+ - "client/css/bootstrap*.*"
+ - "client/css/default.css"
+ - "client/css/font*.*"
+ 
