@@ -5,6 +5,7 @@ Package for the server part of Site Status.
 :copyright: (c) 2016 by Martin Grønholdt.
 :license: MIT, see LICENSE for more details.
 '''
+import sys
 import six
 import threading
 from twisted.python import log
@@ -40,7 +41,7 @@ class StatusThread(threading.Thread):
                     name = action[0]
 
                 log.msg('In thread "' + self.name +
-                        '" working on host "' + name + '"')
+                        '" working on "' + name + '"')
 
                 if action[1] is not None:
                     action[1](action[0])
@@ -49,4 +50,7 @@ class StatusThread(threading.Thread):
 
                 QUEUE.task_done()
             except:
-                log.err('Exception in "' + self.name + '"')
+                exc_type, exc_value = sys.exc_info()[:2]
+                log.err('%s exception with message "%s" in %s'
+                        % (exc_type.__name__, exc_value,
+                           threading.current_thread().name))

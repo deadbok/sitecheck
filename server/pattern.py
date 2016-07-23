@@ -6,7 +6,9 @@ Patterns for searching index.html diff's
 :license: MIT, see LICENSE for more details.
 '''
 import re
+import sys
 import json
+from twisted.python import log
 from server.match import Match
 
 
@@ -14,7 +16,7 @@ class Pattern(object):
     """
     Pattern used for searching an index.html for matches.
     """
-    def __init__(self, name='', ppattern='', ptype='simple', score='neutral',
+    def __init__(self, name='', ppattern=r'', ptype='simple', score='neutral',
                  pattern=None):
         if pattern is None:
             self.name = name
@@ -58,9 +60,13 @@ class Pattern(object):
             elif add_all:
                 matches.add_match(line, 'neutral')
         elif self.type == 'regex':
-            re_matches = re.match(self.pattern, line, re.M)
-            for re_match in re_matches:
-                matches.add_match(re_match, self.score)
+            try:
+                re_matches = re.match(self.pattern, line, re.M)
+                for re_match in re_matches:
+                    matches.add_match(re_match, self.score)
+            except:
+                e = sys.exc_info()[0]
+                log.err("Exception: " + str(e))
 
         return matches
 

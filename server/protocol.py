@@ -98,6 +98,7 @@ class SiteStatusProtocol(WebSocketServerProtocol):
         """
         Get data for a list of pattern names. `*` for all.
         """
+        log.msg('Get patterns: ' + str(patterns))
         if patterns[0] == '*':
             for pattern in self.factory.state.patterns.patterns.keys():
                 log.msg('Get pattern: ' + pattern)
@@ -109,7 +110,7 @@ class SiteStatusProtocol(WebSocketServerProtocol):
                                               self)
         else:
             for pattern in patterns:
-                log.msg('Get host: ' + pattern)
+                log.msg('Get pattern: ' + pattern)
                 QUEUE.put((pattern, None,
                            self.factory.state.patterns.send,
                            self.factory.state, self))
