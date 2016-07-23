@@ -67,7 +67,7 @@ $('#addhostok').click(
 
 $('#removeHostButton').click(
 		function() {
-			var host_names = $("#host:checked").map(function() {
+			var host_names = $('[class="host"]:checked').map(function() {
 				return this.value;
 			}).get();
 			$('#removeHostList').html((host_names).join(' '));
@@ -76,7 +76,7 @@ $('#removeHostButton').click(
 
 $('#removeHostYes').click(
 		function() {
-			var host_names = $("#host:checked").map(function() {
+			var host_names = $('[class="host"]:checked').map(function() {
 				return this.value;
 			}).get();
 			protocol.remove_hosts(host_names);

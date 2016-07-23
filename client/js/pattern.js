@@ -26,9 +26,11 @@ function escapeHtml(string)
 function addPattern(pattern)
 {
 	if (pattern.name === null)
+	{
 		pattern.name = 'null';
+	}
 	//Generate CSS safe id.
-	pattern.id = pattern.name.replace('.', '_').replace('-', '_');
+	pattern.id = pattern.name.replace('.', '_').replace('-', '_').replace(' ', '_');
 
 	//Escape the pattern
 	pattern.pattern_escape = escapeHtml(pattern.pattern);
